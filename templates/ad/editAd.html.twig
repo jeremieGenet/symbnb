@@ -1,0 +1,30 @@
+{# MODIFICATION D'UNE ANNONCE #}
+
+{% extends 'base.html.twig'%}
+
+{% block title %}Modification d'une annonce{% endblock %}
+
+{# AFFICHE NOS THEME PERSONNALISES #}
+{% form_theme form 'ad/_collection.html.twig' %} {# RAPPEL : Le tag form_theme permet d'indiquer à twig un thème spécifique pour un formulaire,
+et ici le code des themes est dans le fichier ad/_collection.html, s'il était dans ce même fichier il faudrait écrire _self à la place de la route #}
+
+{% block body %}
+    <div class="container">
+        <h1>Modifier l'annonce : {{ad.title}} </h1>
+
+        {{ form_start(form) }}
+
+            {# AFFICHAGE DE NOTRE FORMULAIRE #}
+            {{ form_widget(form) }} {# form_widget() Affiche un champs ou un groupe de champs #}
+
+            <button type="submit" class="btn btn-primary">Valider les modifications</button>
+
+        {{ form_end(form) }} {# form_end() va, par défaut, forcer l'affichage de tout les champs absents #}
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    {# Script JQUERY qui va permettre lorsqu'on appuie sur le boutton 'Ajouter/Supprimer une image' de faire apparaitre l'entrée de l'url et de la légende ou la supprimée #}
+    <script src="/js/ad.js"></script>
+{% endblock %}

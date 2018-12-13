@@ -1,0 +1,48 @@
+{# PAGE DE VISU DE L'ENSEMBLE DES ANNONCES #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos magnifiques annonces{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <!-- La classe my-3 signifie une marge top et bottom de 3 -->
+    <h1 class="my-3">Voici les annonces de nos hôtes !</h1> 
+
+    <div class="row">
+        {% for ad in ads %} {# La boucle for ici est une boucle foreach, donc "ad" sera une des annonces du tableau "ads" #}
+        {% set url_to_list_ads =  path('ads_show', {'slug': ad.slug})  %}  {# On définit une variable twig avec le mot clé set (pour stocker le chemin vers la liste des annonces) #}
+        <div class="col-md-4">
+            <div class="card bg-light mb-3">
+                <div class="card-header text-center">
+                    {# On aurait pu écrire aussi : {{ad.rooms}} chambres, <strong>{{ad.price}}&euros; grace à l'intelligence de twig #}
+                    {{ad.getRooms}} chambres, <strong>{{ad.getPrice}}&euros; / nuit</strong> <br>
+                    <small>Pas encore noté</small>
+                </div>
+
+                {# lien vers la liste des annonces via une variable twig déclarée au début de la boucle #}
+                <a href="{{ url_to_list_ads }}">
+                    <img src="{{ad.coverImage}}" alt="Image de l'appartement" style="height: 200px; width: 100%; display: block">
+                </a>
+
+                <div class="card-body">
+                    <h4 class="card-body">
+                        <a href="{{ url_to_list_ads }}">
+                            {{ad.title}}
+                        </a>
+                    </h4>
+                    <p class="card-text">
+                        {{ad.introduction}}
+                    </p>
+                    <a href="{{ url_to_list_ads }}" class="btn btn-secondary">En savoir plus +!</a>
+                </div>
+            </div> 
+        </div>
+        {% endfor %}
+    </div>
+    
+</div>
+
+{% endblock %}

@@ -2,3 +2,5 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    # On ajoute à la ligne suivante un thème bootstrap déja présent dans symfony (utilisé à chaque appel d'un formulaire), ici utile dans le fichier new.html.twig
+    form_themes: ['bootstrap_4_layout.html.twig'] 

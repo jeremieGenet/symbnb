@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class HomeController extends Controller{
 
-    // Fonction public qui va correspondre à notre affichage du site
+    // Fonction public qui va correspondre à notre affichage de la page d'accueil
     /**
      * @Route("/", name="homepage")
      */

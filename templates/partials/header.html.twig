@@ -1,0 +1,42 @@
+{# HEADER DE NOTRE TEMPLATE DE BASE #}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="{{ path('homepage') }}">SymBNB !</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('homepage') }}">Accueil <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('ads_index') }}">Annonces <span class="sr-only">(current)</span></a>
+            </li>
+            
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="#" class="nav-link">Mon compte !</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+{# CONFIGURATION D'UN FLASH (Message passé à l'utilisateur) #}
+{# app est une variable globale (elle possède toutes sortes d'informations sur l'application et son état #}
+{# dump(app.flashes) permet d'afficher le contenu des Flashes (affiche un tableau rempli si on se trouve sur .../ads/new ) #}
+{# Affiche un tableau de type: Flash1 [[success => message1], [succes => message2] et Flash2 [[danger => message1], [danger => message2]] #}
+
+{# Double boucle qui va parcourir un tableau inbriquer dans un autre #}
+{% for label, messages in app.flashes %} {# label vaudra 'success' et messages vaudra la liste de messages #}
+    <div class="container">
+        <div class="alert alert-{{ label }}"> {# ici label vaudra succes, warning, ou danger ce qui modifiera la couleur du flash #}
+            {% for message in messages %} {# Pour chaque message je veux un paragraphe #}
+                <p>{{ message | raw }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}

@@ -1,0 +1,80 @@
+{# AFFICHAGE D'UNE ANNONCE (ET SES INFORMATIONS) #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ad.title}}
+{% endblock %}
+
+{%  block body %}
+
+    <div class="ad-title" style="background-image: url({{ ad.coverImage }})">
+        <div class="container">
+            <h1>{{ ad.title }}</h1>
+            <p>{{ ad.introduction }}</p>
+            <p class="h2">
+                <strong>{{ ad.rooms }} chambres</strong> pour <strong>{{ ad.price }} euros</strong> par nuit
+            </p>
+            <a href="#" class="btn btn-primary">Réserver !</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <!-- Description de l'annonce -->
+            <div class="col-md-8 mb-3">
+                {{ ad.content | raw }} {# Filtre 'raw' affiche le texte sans protection (permet donc l'interprétation HTML) #}
+
+                {# Carousel des Image de l'annonce #}
+                {# Carousel copier de bootstrap dans Component > carousel, puis modifié pour nos besoins #}
+                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        {# Boucle qui permet que les puces d'indications du carousel soient au même nombre que les images #}
+                        {% for image in ad.images %}
+                        <li data-target="#carouselExampleIndicators" data-slide-to="{{ loop.index0 }}" {# Pour l'attribut data-slide-to, qui se doit d'être numéroté à chaque image, on utilise loop-index0 (ainsi une numérotation automatique sera faite) #}
+                        class="{% if loop.first %}active{% endif %}"></li>
+                        {% endfor %}
+                    </ol>
+                    <div class="carousel-inner">
+                        {# Boucle qui permet d'inclure toutes le images en relation avec l'annonce #}
+                        {% for image in ad.images %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">  {# cette condition permet de ne rendre active que la première image #}
+                            <img class="d-block w-100" src="{{ image.url }}" alt="First slide">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5>{{ad.title}}</h5>
+                                <p>{{image.caption}}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+
+            </div>
+            <!-- Infos du propriétaire -->
+            <div class="col">
+                <div class="row">
+                    <div class="col-4">
+                        <img src="http://placehold.it/64x64" alt="Avatar de Joseph">
+                    </div>
+                    <div class="col">
+                        <h3>Joseph Dupont</h3>
+                        <span class="badge badge-primary">3 annonces</span>
+                    </div>
+                </div>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, adipisci libero accusamus officiis quam nihil consequuntur. Distinctio tempore numquam expedita!</p>
+                <p>Fugiat obcaecati ipsa, dicta consectetur nulla accusamus amet corrupti nihil ea? Incidunt sit praesentium quas possimus dolorum molestias tempora aliquid!</p>
+                <p>Autem tenetur quis adipisci beatae harum quos fuga, assumenda dolorem aliquam, ipsam dolores omnis cumque dolore inventore facilis rerum ea.</p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+

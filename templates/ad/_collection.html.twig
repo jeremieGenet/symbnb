@@ -1,0 +1,63 @@
+
+{# BLOCK COMMUN AUX FICHIER editAd.html.twig et new.html.twig, PERMET DE STYLISER (personnaliser les thèmes) DE LA COLLECTION D'IMAGE (notre sous-formulaire) #}
+{# pour appeller ce fichier il faut écrire : {% form_theme form 'ad/_collection.html.twig' %} dans le fichier ou l'on désire la personnalisation des thèmes #}
+
+
+{# Ce block sera appellé grâce au Tag form_theme plus haut dans le fichier #}
+{# CREATION D'UN THEME PERSONNALISE POUR LE "SOUS" FORMULAIRE EN ENTIER (notre collection d'images, qui comporte 2x2 url, label ) #}
+{% block _annonce_images_widget %} {# _[nom]_widget permet de modifier la sortie (le style) du form_widget() sur un champ donné #}
+
+    <p>Ici, vous pouvez ajouter vos propres images !</p>
+
+    {# form_widget() Affiche un champs ou un groupe de champs #}
+    {{ form_widget(form) }} {# RAPPEL : La variable "form" de ce block n'est pas la même que celle dans le block body, dans le block body "form" représente
+     le formulaire complet, mais dans ce block "form" représente le formulaire de collection d'images avec legend et url (soit annonce_images) #}
+    
+    <!-- INPUT CACHE QUI VA NOUS SERVIR DE COMPTEUR (pour incrémenter dans le bloc javascripts la constante "index") -->
+    <input type="hidden" id="widgets-counter" value="0"> <!-- Création d'un imput caché (si un champ n'a pas d'attribut name alors il n'est pas envoyé au serveur) -->
+    <!-- En fait, à chaque fois que l'on va cliquer sur le bouton 'Ajouter une image' cet input sera créé -->
+
+     <div class="form-group">
+        <!-- Le type="button" permet de ne pas soumettre notre 'sous-formulaire de collection d'images' -->
+        <button type="button" id="add-image" class="btn btn-secondary">Ajouter une image</button>
+     </div>
+
+{% endblock %}
+
+
+{# CREATION D'UN THEME PERSONNALISE POUR LES ENTREES DU "SOUS" FORMULAIRE (le but est de ne conserver dans le rendu que le widget (qui est le rendu HTML de l'entry) #}
+{% block _annonce_images_entry_row %} {# ..._row c'est le rendu total d'un champ (soit le label, les erreur, le widget et les aides)  #}
+    {{ form_widget(form) }}
+{% endblock %}
+
+
+{# CREATION D'UN THEME PERSONNALISE POUR LES ENTREES (entry) DU "SOUS" FORMULAIRE (une entrée = un champ url, et un champ caption #}
+{%  block _annonce_images_entry_widget %}
+
+    <div class="form-group" id="block_{{id}}"> {# On défini un id à notre div qui aura la valeur de block_{{id}} #}
+    {#{{dump(id)}#} {# Le dump() de id affiche annonce_images_0 ou 1 ou 2 selon le nb de champ ajouté #}
+        <div class="row">
+            <div class="col-10">
+                <div class="row">
+                    <div class="col">
+                        <!-- CREATION DU CHAMP URL DE L'ENTRY (visible uniquement lorsqu'on appuie sur le bouton "Ajouter un image") -->
+                        {{ form_widget(form.url) }} {# form est ici une "entry" (une entrée de notre "sous" formulaire) 
+                        et les "entry" dans cette collection sont des ImageType (et la classe ImageType comprend 2 entry soit l'url et caption) #}
+                        {{ form_errors(form.url) }} {# Affiche les erreurs du champs url (soit les contraites (@Assert() misent sur les attributs de la classe Image, notre collection d'images)) #}
+                    </div>
+                    <div class="col">
+                        <!-- CREATION DU CHAMP CAPTION DE L'ENTRY (visible uniquement lorsqu'on appuie sur le bouton "Ajouter un image") -->
+                        {{ form_widget(form.caption) }} {# Même chose pour la légende que pour l'url #}
+                        {{ form_errors(form.caption) }} {# Affiche les erreurs du champs caption (soit les contraites (@Assert() misent sur les attributs de la classe Image, notre collection d'images)) #}
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <!-- CREATION DU BOUTON SUPPRESSION DE L'ENTRY (visible uniquement lorsqu'on appuie sur le bouton "Ajouter un image") -->
+                <!-- On donne à notre bouton 2 attributs data-quelquechose pour permettre en javascript de supprimer l'affichage d'une entrée (entry) si l'utilisateur le désir -->
+                <button type="button" data-action="delete" data-target="#block_{{id}}" class="btn btn-danger">X</button>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
