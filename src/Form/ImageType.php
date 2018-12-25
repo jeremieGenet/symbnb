@@ -1,5 +1,7 @@
 <?php
 
+// FICHIER GENERER après avoir taper dans la console make:form puis le nom du formulaire voulu (ici ImageType)
+
 namespace App\Form;
 
 use App\Entity\Image;

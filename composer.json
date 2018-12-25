@@ -22,6 +22,7 @@
         "symfony/swiftmailer-bundle": "^3.1",
         "symfony/twig-bundle": "*",
         "symfony/validator": "*",
+        "symfony/var-dumper": "*",
         "symfony/web-link": "*",
         "symfony/yaml": "*"
     },

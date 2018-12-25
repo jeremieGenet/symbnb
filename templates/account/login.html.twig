@@ -1,0 +1,41 @@
+{# Page de Connexion au site #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion au site{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">&nbsp;</div>
+            <div class="col-md-6">
+                <div class="bg-secondary py-3 px-3">
+                    <h1>Connectez vous !</h1>
+
+                    {% if hasError %} {# hasError est définit dans le fichier AccountController.php dans la fonction login() #}
+                        <div class="alert alert-danger">Une erreur est survenue, le nom d'utilisateur ou le mot de passe est invalide !</div>
+                    {% endif %}
+                    <!-- IMPORTANT, symfony a besoin pour un formulaire d'authentification utilisateur de 2 choses, que le nom des inputs soit _username et _password (Penser à l'enderscore) -->
+                    <!-- le chemin 'account_login' permet au fichier "security.yaml" de savoir que ce formulaire est un formulaire d'authentification -->
+                    <form action="{{ path('account_login') }}" method="post" >
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <!-- IMPORTANT, que le name soit bien "_username" pour que symfony le reconnaisse -->
+                            <input type="text" name="_username" id="email" class="form-control" placeholder="Adresse email..." value="{{ username }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <!-- IMPORTANT, que le name soit bien "_password" pour que symfony le reconnaisse -->
+                            <input type="password" name="_password" id="password" class="form-control" placeholder="Mot de passe ..." required>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">Connexion !</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

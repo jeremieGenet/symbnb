@@ -1,10 +1,13 @@
 <?php
 
+// FICHIER GENERER après avoir taper dans la console make:form puis le nom du formulaire voulu (ici AnnonceType)
+
 namespace App\Form;
 
 use App\Entity\Ad;
-use App\Form\ImageType; // Utile à la
-use Symfony\Component\Form\AbstractType;
+use App\Form\ApplicationType;
+use App\Form\ImageType;
+//use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\UrlType; // Utile aux types de champs de notre formulaire
@@ -17,26 +20,10 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType; // Utile aux type
 
 // CLASSE CREER VIA L'INVITE DE COMMANDE (make:form)
 // CLASSE QUI GERE LA CREATION D'UN FORMULAIRE D'ANNONCE (le nom de la classe fini par Type, c'est une convention)
-class AnnonceType extends AbstractType{
+class AnnonceType extends ApplicationType // RAPPEL: ApplicationType s'extends lui-même de AbstractType
+{
 
-    /**
-     * Permet d'avoir la configuration de base d'un champ de formulaire (le champs de collection d'image, soit le formulaire qui sera "imbriqué" dans le formulaire principal de création d'annonce)
-     *
-     * @param string $label
-     * @param string $placeholder
-     * @param array $options
-     * @return array
-     */
-    private function getConfig($label, $placeholder, $options = [] ) {
-        return array_merge([ // array_merge est une méthode php qui fusionne les tableaux (ici on veut fusionné le tableau avec le label et l'attr avec le tableau $option qui va contenir )
-            'label' => $label,
-            'attr' => [
-                'placeholder' => $placeholder
-            ]
-        ], $options);
-    }
-
-
+    // La méthode getConfig() provient de la classe ApplicationType dans laquel se trouve mes méthodes faites maison
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

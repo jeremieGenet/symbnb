@@ -16,3 +16,16 @@ div.ad-title h1, div.ad-title p{
 div.carousel-caption{
     text-shadow: 3px 3px 3px rgba(0,0,0,0.5); /* Pour donner un ombrage au texte */
 }
+
+/* Style de la photo d'avatar du propriétaire de l'annonce, ou de l'utilisateur connecté */
+.avatar{
+    max-width: 64px;
+    max-height: 64px;
+    border-radius: 50%;
+}
+
+/* Style de la photo d'avatar de l'utilisateur lorsqu'il est connecté (dans la nav bar)*/
+.avatar-mini{
+    max-width: 30px;
+    max-height: 30px;
+}

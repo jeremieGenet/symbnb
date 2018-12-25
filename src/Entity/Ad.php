@@ -5,13 +5,13 @@ namespace App\Entity;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection; // Utile à la fonction initializeSlug()
+
+use Symfony\Component\Validator\Constraints as Assert; // Utile pour ajouter des contraintes sur les attributs de notre classe (dans le but d'une validation "controlée" du formulaire d'annonce)
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-use Doctrine\Common\Collections\Collection; // Utile à la fonction initializeSlug()
-use Symfony\Component\Validator\Constraints as Assert; // Utile pour ajouter des contraintes sur les attributs de notre classe (dans le but d'une validation "controlée" du formulaire d'annonce)
-
 /**
- * Classe des Annonces (Le "@ORM\HasLifecycleCallbacks" prévient doctrine qu'il y a des fonctions liées au cycle de vie)
+ * Classe des Annonces (Le "@ORM\HasLifecycleCallbacks" prévient doctrine qu'il y a des fonctions liées au cycle de vie), utilisé dans la fonction initializeSlug() plus bas
  * Le "UniqueEntity" permet de s'assurer de la valeur "unique" d'une entité, ici on s'assure que l'attribut "title" n'existera pas lors de la création d'une autre annonce
  * 
  * @ORM\Entity(repositoryClass="App\Repository\AdRepository")
@@ -83,6 +83,12 @@ class Ad
      * @Assert\Valid()
      */
     private $images;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="ads")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $author;
 
 
     public function __construct()
@@ -256,6 +262,18 @@ class Ad
                 $no->setAd(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
 
         return $this;
     }

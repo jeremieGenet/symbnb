@@ -21,7 +21,7 @@
 
     <div class="container">
         <div class="row">
-            <!-- Description de l'annonce -->
+            <!-- DESCRIPTION DE L'ANNONCE -->
             <div class="col-md-8 mb-3">
                 {{ ad.content | raw }} {# Filtre 'raw' affiche le texte sans protection (permet donc l'interprétation HTML) #}
 
@@ -58,20 +58,25 @@
                 </div>
 
             </div>
-            <!-- Infos du propriétaire -->
+            <!-- INFO DU PROPRIETAIRE -->
             <div class="col">
-                <div class="row">
-                    <div class="col-4">
-                        <img src="http://placehold.it/64x64" alt="Avatar de Joseph">
+                <div class="row mb-3 align-item-center">
+                    <div class="col-3">
+                        <!-- Lien qui nous mène vers les info de l'annonceur (localhost/user/'nom de l'annonceur') -->
+                        <a href="{{ path('user_show', {'slug': ad.author.slug}) }}">
+                            <!-- getFullName est une fonction qui retourne les 2 tags ad.author.firstName et ad.author.lastName (voir la fonction dans fichier User.php) -->
+                            <img src="{{ ad.author.picture }}" class="avatar avatar-medium" alt="Avatar de {{ad.author.getFullName}}">
+                        </a>
                     </div>
                     <div class="col">
-                        <h3>Joseph Dupont</h3>
-                        <span class="badge badge-primary">3 annonces</span>
+                        <!-- Lien qui nous mène vers les info de l'annonceur (localhost/user/'nom de l'annonceur') -->
+                        <a href="{{ path('user_show', {'slug': ad.author.slug}) }}">
+                            <h3>{{ad.author.getFullName}}</h3>
+                        </a>
+                        <span class="badge badge-primary">{{ ad.author.ads | length }} annonces</span>
                     </div>
                 </div>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus, adipisci libero accusamus officiis quam nihil consequuntur. Distinctio tempore numquam expedita!</p>
-                <p>Fugiat obcaecati ipsa, dicta consectetur nulla accusamus amet corrupti nihil ea? Incidunt sit praesentium quas possimus dolorum molestias tempora aliquid!</p>
-                <p>Autem tenetur quis adipisci beatae harum quos fuga, assumenda dolorem aliquam, ipsam dolores omnis cumque dolore inventore facilis rerum ea.</p>
+                {{ad.author.description | raw }}
             </div>
         </div>
     </div>

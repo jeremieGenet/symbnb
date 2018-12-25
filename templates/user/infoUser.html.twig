@@ -1,0 +1,59 @@
+{# AFFICHAGE DES INFORMATION DE L'UTILISATEUR CONNECTE #}
+
+{% extends 'base.html.twig'%}
+
+{% block title %}Page de {{user.getFullName}}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-3 text-center">
+                <!-- AVATAR UTILISATEUR -->
+                <img src="{{user.picture}}" class="avatar mb-3" alt="Avatar de {{user.getFullName}}">
+                <br>
+                <!-- NOMBRE D'ANNONCES -->
+                <!-- Rappel, le filtre length affiche le nombre, donc ici le nombre d'annonces de l'utilisateur -->
+                <span class="badge-primary">{{user.ads | length}} annonces</span>
+            </div>
+            <div class="col-9">
+                <!-- NOM UTILISATEUR -->
+                <h1>{{user.getFullName}}</h1>
+                {# Si l'annonceur est le même que l'utilisateur connecté alors... (dans le but d'avoir des liens d'interaction lorsqu'on est sur ses propres informations utilisateur) #}
+                {% if user is same as(app.user) %}
+                    <div class="mt-3">
+                        <!-- Lien qui mène à la page de modification de profil (localhost/account/profile) le nom du chemin est défini dans AccountController.php -->
+                        <a href="{{ path('account_profile') }}" class="btn btn-secondary mr-2 mb-2">Modifier mes informations</a>
+                        <!-- Lien qui mène à la page de modification password (localhost/account/password-update) le nom du chemin est défini dans AccountController.php -->
+                        <a href="{{ path('account_password') }}" class="btn btn-primary mb-2">Modifier mon mot de passe</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- DESCRIPTION UTILISATEUR -->
+        {{user.description | raw}}
+
+        <hr>
+
+        <h2>Les annonces de {{user.getFullName}}</h2>
+
+        <!-- ANNONCES DE L'UTILISATEUR -->
+        {# Si l'utilisateur a des annonces (supérieur à 0) #}
+        {% if user.ads | length > 0 %}
+            <div class="row">
+                {% for ad in user.ads %}
+
+                    {# HTML qui contient l'affichage d'une annonce type (qui mis dans une boucle for permet l'affichage de l'ensemble des annonces de l'utilisateur #}
+                    {% include 'ad/_ads.html.twig' %}
+
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                <p>
+                    <strong>{{user.getFullName}}</strong> n'a pas encore d'annonce sur le site !
+                </p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+

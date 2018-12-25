@@ -28,7 +28,7 @@ class AdController extends AbstractController
         $ads = $repo->findAll(); // On va chercher toutes les annonces de la bdd (méthode findAll()), $ads sera sous forme d'un tableau
         
         // ici 'ads' => $ads veut dire que l'on défini une variable (donc 'ads') utilisable dans twig qui aura comme valeur $ads (soit un tableau qui contient toutes les annonces)
-        return $this->render('ad/index.html.twig', [
+        return $this->render('ad/showAds.html.twig', [
             'ads' => $ads
         ]);
     }
@@ -38,7 +38,7 @@ class AdController extends AbstractController
      * Paramètre Request $request est une injection de dépendance (permettra de récupérer le post, la requète du formulaire via sa méthode handleRequest())
      * Paramètre ObjectManager $manager est une injection de dépendance (permet de faire persister et envoyer le contenu du formulaire dans la bdd)
      *
-     * @Route("/ads/new", name="ads_create")
+     * @Route("/ads/newAd", name="ads_create")
      * 
      * @return Response
      */
@@ -92,6 +92,9 @@ class AdController extends AbstractController
                 $manager->persist($image); // On fait persister chaque images
             }
 
+            // Rappel: getUser() permet de récupérer l'utilisateur actuellement connecté (fonction globale symfony)
+            $ad->setAuthor($this->getUser()); // On modifie l'auteur de l'annonce en lui indiquant que c'est l'utilisateur connecté ($this->getUser())
+
             //$manager = $this->getDoctrine()->getManager(); // On appel le manager de doctrine (c'est lui qui gère les modifications de la bdd) (Ligne inutile avec l'injection de dépendance)
             $manager->persist($ad); // On fait persister $ad (qui contient les données tapée dans le formulaire)
             $manager->flush(); // On envoie la requête SQL
@@ -109,7 +112,7 @@ class AdController extends AbstractController
             ]); 
         }
 
-        return $this->render('ad/new.html.twig', [
+        return $this->render('ad/newAd.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -117,7 +120,7 @@ class AdController extends AbstractController
     /**
      * Permet d'afficher le formulaire d'édition
      *
-     * @Route("/ads/{slug}/edit", name="ads_edit")
+     * @Route("/ads/{slug}/editAd", name="ads_edit")
      * 
      * @return Response
      */
@@ -167,11 +170,11 @@ class AdController extends AbstractController
      *
      * @return Response
      */
-    public function show(Ad $ad){ // Le paramétre $ad stockera (grâce au @ParamCoverter de symfony) l'annonce de la classe Ad
+    public function showAd(Ad $ad){ // Le paramétre $ad stockera (grâce au @ParamCoverter de symfony) l'annonce de la classe Ad
         // On récupère l'annonce qui correspond au slug
         //$ad = $repo->findOneBySlug($slug); // findOneByX = trouve un élément / findByX trouve plusieurs éléments
 
-        return $this->render('ad/show.html.twig', [
+        return $this->render('ad/showAd.html.twig', [
             'ad' => $ad
         ]);
     }

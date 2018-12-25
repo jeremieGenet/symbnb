@@ -1,13 +1,29 @@
 security:
+    encoders:
+        App\Entity\User:
+            algorithm: bcrypt # On détermine pour notre entité User l'algorithmie en bcrypt qui est un type de criptage proposé par symfony
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
-    providers:
-        in_memory: { memory: ~ }
+    providers: # un provider est un fournisseur de données d'utilisateurs
+        in_memory: { memory: ~ } # Paramètre par défaut
+        in_database: # On crée un nouveau provider (que l'on nomme in_database (on pourrait l'appeller autrement, mais comme les utilisateurs proviennent de la bdd on le nomme ainsi))
+            entity: # On défini que notre provider 'in_database' utilisera une entité
+                class: App\Entity\User # Puis on défini l'entité qui sert à savoir ou se trouve les utilisateurs
+                property: email # On doit alors définir une propriété (property) qui permettra son authentification (ici l'utilisateur s'authentifira avec son email)
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             anonymous: true
+
+            provider: in_database # On crée dans le "main" (principal) firewalls un nouveau provider dans lequel on dit à symfony ou aller chercher les utilisateurs (soit ici dans in_database défini plus haut)
+            form_login: # On fait appel à form_login (Symfony est livré avec un système form_login intégré qui gère automatiquement un formulaire de connexion POST)
+                login_path: account_login # On lui notifie le chemin pour aller à la page de connexion ( Et dans le formulaire on nomme l'attribut action comme cela: <form action="{{ path('account_login') }}" method="post" >)
+                check_path: account_login # on lui donne le chemin ou il doit verifier les informations d'authentification (qui est pour nous le même chemin)
+            logout:
+                path: account_logout # Nom de la route qui permet de se déconnecter
+                target: account_login # Redirection vers le formulaire de connexion
+
 
             # activate different ways to authenticate
 

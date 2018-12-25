@@ -1,0 +1,25 @@
+{# PAGE DE VISU DE L'ENSEMBLE DES ANNONCES #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos magnifiques annonces{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <!-- La classe my-3 signifie une marge top et bottom de 3 -->
+    <h1 class="my-3">Voici les annonces de nos hôtes !</h1> 
+
+    <div class="row">
+        {% for ad in ads %} {# La boucle for ici est une boucle foreach, donc "ad" sera une des annonces du tableau "ads" #}
+        
+            {# HTML qui contient l'affichage d'une annonce type (qui mis dans une boucle for permet l'affichage de l'ensemble des annonces #}
+            {% include 'ad/_ads.html.twig' %}
+
+        {% endfor %}
+    </div>
+    
+</div>
+
+{% endblock %}
