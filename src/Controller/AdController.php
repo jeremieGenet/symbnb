@@ -6,18 +6,20 @@ use App\Entity\Ad;
 use App\Entity\Image;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AnnonceType; // Utile à la classe createForm()
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security; // Pour la gestion des autorisations utilisateurs (restriction multiple)
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted; // Pour la gestion des autorisations utilisateurs (restriction complète)
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController; 
 use App\Repository\AdRepository; // Utile aux repository dans nos fonctions
 use Symfony\Component\HttpFoundation\Response; // Utile à la fonction show()
-use Doctrine\Common\Persistence\ObjectManager; // Utile à la fonction create() permet de faire persister et d'envoyer nos annonces dans la bdd
 use Symfony\Component\HttpFoundation\Request; // Utile à la fonction create() pour récupérer le post de l'annonce (la requète)
+use Doctrine\Common\Persistence\ObjectManager; // Utile à la fonction create() permet de faire persister et d'envoyer nos annonces dans la bdd (flush)
 
 class AdController extends AbstractController
 {
     /**
      * Permet d'afficher toutes nos annonces
      * 
-     * @Route("/ads", name="ads_index")
+     * @Route("/ads", name="ads_show")
      */
     public function index(AdRepository $repo)
     {
@@ -37,8 +39,10 @@ class AdController extends AbstractController
      * Permet de Gérer notre formulaire de création d'annonces
      * Paramètre Request $request est une injection de dépendance (permettra de récupérer le post, la requète du formulaire via sa méthode handleRequest())
      * Paramètre ObjectManager $manager est une injection de dépendance (permet de faire persister et envoyer le contenu du formulaire dans la bdd)
-     *
+     * Param @IsGranted permet un usage strictement qu'aux utilisateurs connectés ("ROLE_USER") de créer une annonce
+     * 
      * @Route("/ads/newAd", name="ads_create")
+     * @IsGranted("ROLE_USER")
      * 
      * @return Response
      */
@@ -119,8 +123,12 @@ class AdController extends AbstractController
 
     /**
      * Permet d'afficher le formulaire d'édition
-     *
-     * @Route("/ads/{slug}/editAd", name="ads_edit")
+     * 
+     * le "@Security" authorise uniquement un utilisateur connecté ('ROLE_USER'), mais aussi seulement l'annoceur de l'annonce à effectuer une modification sur celle-ci, 
+     * (expressions de sécurités, voir: https://symfony.com/doc/current/security/expressions.html)
+     * 
+     * @Route("/ad/{slug}/editAd", name="ad_edit")
+     * @Security("is_granted('ROLE_USER') and user == ad.getAuthor()", message="Cette annonce ne vous appartient pas, vous ne pouvez pas la modifier !")
      * 
      * @return Response
      */
@@ -145,7 +153,7 @@ class AdController extends AbstractController
             // addFlash() sert à notifier l'utilisateur de ce qui à été fait (param 1 = type de message, param 2 = message)
             $this->addFlash(
                 'success',
-                "L'annonce <strong>Test</strong> a bien été modifiée !"
+                "L'annonce <strong>{$ad->getTitle()}</strong> a bien été modifiée !"
             );
 
             // Fonction redirectToRoute() qui créé un Response qui demande une redirection sur une autre page (ici on veut rediriger vers la visu de notre annonce fraichement créé)
@@ -166,7 +174,9 @@ class AdController extends AbstractController
      * Permet d'afficher une seule annonce
      * 
      * Le paramètre ci dessous {slug} permet de passer une variable dans la route (ici le slug soit le titre de l'annonce formater en url)
-     * @Route("/ads/{slug}", name="ads_show")
+     * 
+     * @Route("/ad/{slug}", name="ad_show")
+     * 
      *
      * @return Response
      */
@@ -177,6 +187,33 @@ class AdController extends AbstractController
         return $this->render('ad/showAd.html.twig', [
             'ad' => $ad
         ]);
+    }
+
+    /**
+     * Permet de supprimer une annonce
+     * 
+     * le "@Security" authorise uniquement un utilisateur connecté ('ROLE_USER'), mais aussi seulement l'annoceur de l'annonce à effectuer une modification sur celle-ci, 
+     * (expressions de sécurités, voir: https://symfony.com/doc/current/security/expressions.html)
+     * 
+     * 
+     * @Route("/ad/{slug}/delete", name="ad_delete")
+     * @Security("is_granted('ROLE_USER') and user == ad.getAuthor()", message="Cette annonce ne vous appartient pas, vous ne pouvez pas la supprimer !")
+     *
+     * @param Ad $ad
+     * @param ObjectManager $manager
+     * @return Response
+     */
+    public function delete(Ad $ad, ObjectManager $manager){
+        $manager->remove($ad); // On supprime l'annonce
+        $manager->flush(); // On envoie à la bdd 
+
+        // addFlash() sert à notifier l'utilisateur de ce qui à été fait (param 1 = type de message, param 2 = message)
+        $this->addFlash(
+            'success',
+            "L'annonce <strong>{$ad->getTitle()}</strong> a bien été supprimée !"
+        );
+
+        return $this->redirectToRoute("ads_show");
     }
 
     

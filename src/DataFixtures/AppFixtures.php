@@ -3,15 +3,16 @@
 namespace App\DataFixtures;
 
 
+use App\Entity\Role;
 use App\Entity\User;
-use Doctrine\Bundle\FixturesBundle\Fixture;
 
 //use Cocur\Slugify\Slugify; // A ajouter pour se servir de la classe Slugify
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use App\Entity\Ad; // A ajouter pour se servir de la classe Ad
 use App\Entity\Image; // A ajouter pour se servir de la classe Image
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface; // Utile dans le constructeur de notre classe AppFixtures()
 use Faker\Factory; // A ajouter pour se servir de la classe Factory de Faker
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface; // Utile dans le constructeur de notre classe AppFixtures()
 
 class AppFixtures extends Fixture
 {
@@ -25,9 +26,27 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-
-        $faker = Factory::create('fr-FR'); // Utilisation de la librairie Faker via la classe Factory aver la localisation francaise ('fr-FR')
+        // Utilisation de la librairie Faker via la classe Factory aver la localisation francaise ('fr_FR')
+        $faker = Factory::create('fr_FR'); 
         //$slugify = new Slugify(); // Utilisation de la librairie Slugify (formate au format URL)
+
+        // Création d'un Role administrateur
+        $adminRole = new Role();
+        $adminRole->setTitle('ROLE_ADMIN');
+        $manager->persist($adminRole);
+
+        // Création d'un utilisateur qui aura comme Role celui d'administrateur
+        $adminUser = new User();
+        $adminUser->setFirstName('Jérémie')
+                  ->setLastName('Genet')
+                  ->setEmail('jamyjam82377@gmail.com')
+                  ->setHash($this->encoder->encodePassword($adminUser, '16641664'))
+                  ->setPicture('http://randomuser.me/api/portraits/men/1.jpg')
+                  ->setIntroduction($faker->sentence())
+                  ->setDescription('<p>' . join('</p><p>', $faker->paragraphs(3)) . '</p>')
+                  ->addUserRole($adminRole); // On donne à notre utilisateur le role créé au dessus (celui d'administrateur)
+        $manager->persist($adminUser);
+                
 
         // GESTION DES FAKES UTILISATEURS
         $users = []; // Création d'un tableau qui contiendra après son passage dans la boucle les utilisateurs (soit des tableaux)
@@ -62,8 +81,8 @@ class AppFixtures extends Fixture
                  ->setHash($hash) // $hash représente donc ici le password utilisateur mais il est encodé!!
                  ->setPicture($picture); // $picture représente donc l'url d'image d'avatar random de l'API RANDOMUSER
 
-                 $manager->persist($user);
-                 $users[] = $user; // A la fin de la boucle de 10 (si c'est une boucle de 10) nous aurons 10 utilisateurs (10 tableaux de données) dans le tableau $users[]
+            $manager->persist($user);
+            $users[] = $user; // A la fin de la boucle de 10 (si c'est une boucle de 10) nous aurons 10 utilisateurs (10 tableaux de données) dans le tableau $users[]
 
         }
         

@@ -1,7 +1,7 @@
 {# PERMET L'AFFICHAGE DE L'ENSEMBLE DES ANNONCES (à mettre dans une boucle for pour que cela fonctionne) #}
 
 {# On définit une variable twig avec le mot clé set (pour stocker le chemin vers la liste des annonces) #}
-{% set url_to_list_ads =  path('ads_show', {'slug': ad.slug})  %}  
+{% set url_to_list_ads =  path('ad_show', {'slug': ad.slug})  %}  
     <div class="col-md-4">
         <div class="card bg-light mb-3">
             <div class="card-header text-center">
@@ -24,7 +24,19 @@
                 <p class="card-text">
                     {{ad.introduction}}
                 </p>
-                <a href="{{ url_to_list_ads }}" class="btn btn-secondary">En savoir plus +!</a>
+
+
+                <!-- Si l'utilisateur est connecté, et que l'utilisateur connecté est le même que l'auteur de l'annonce alors on affiche les lien du visu, de modif et suppression-->
+                {% if app.user and app.user == ad.author %}
+                    <a href="{{ url_to_list_ads }}" class="btn btn-secondary">Voir mon annonce</a>
+                    <a href="{{ path('ad_edit', {'slug': ad.slug}) }}" class="btn btn-info mt-1">Modifier mon annonce</a>
+                    <a href="{{ path('ad_delete', {'slug': ad.slug}) }}" class="btn btn-danger mt-1" 
+                    onclick="return confirm(`Etes-vous sur de vouloir supprimer l'annonce : {{ ad.title }} ?`)">Supprimer mon annonce
+                    </a>
+                {% else %} {# Sinon si l'utilisateur n'est pas connecté, il aura seulement accès à la visu de l'annonce #}
+                    <a href="{{ url_to_list_ads }}" class="btn btn-secondary">En savoir plus !</a>
+                {% endif %}
+
             </div>
         </div> 
     </div>

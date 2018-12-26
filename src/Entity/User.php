@@ -99,12 +99,21 @@ class User implements UserInterface
 
     /**
      * Représente un tableau d'annonces de l'utilisateur (il peut il n'y en avoir qu'une !)
-     * Cette propriété est lié à l'entité Ad.php
+     * Cette propriété est liée à l'entité Ad.php
      * 
      * @ORM\OneToMany(targetEntity="App\Entity\Ad", mappedBy="author")
      */
     private $ads;
 
+    /**
+     * Représente le role d'un utilisateur
+     * Cette propriété est liée à l'entité Role.php
+     * 
+     * @ORM\ManyToMany(targetEntity="App\Entity\Role", mappedBy="users")
+     */
+    private $userRoles;
+
+    // Fonction qui retourne en tag twig le nom et prénom de l'utilisateur connecté (utile dans les fichier .twig pour aller plus vite)
     public function getFullName(){
         return "{$this->firstName} {$this->lastName}";
     }
@@ -129,7 +138,9 @@ class User implements UserInterface
 
     public function __construct()
     {
+        // Rappel: ArrayCollection() est une surcouche de tableaux doctrine, avec plus de fonctionnalités qu'une collection de tableau standard
         $this->ads = new ArrayCollection();
+        $this->userRoles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -265,9 +276,21 @@ class User implements UserInterface
     }
 
     /***** 5 FONCTIONS QUI PROVIENNENT DE L'INTERFACE UserInterface (quand on implémente une interface on est obligé d'inclure les méthodes de celle-ci dans la classe *****/
-    
     public function getRoles(){
-        return ['ROLE_USER'];
+        // $this->userRoles est l'instansiation de la classe Role (voir __construct) soit un tableau complexe de type ArrayCollection
+        // map() est une méthode de ArrayCollection qui permet de transformer les élements contenu dans le tableau (même utilisation que array_map() en php)
+        $roles = $this->userRoles->map(function($role){ // map() va boucler sur chaques éléments du tableau complexe $this->userRoles pour n'en retourner que ...
+            return $role->getTitle(); // on retourne les titres du role
+        })->toArray(); // toArray() est une méthode de ArrayCollection() qui transforme une ArrayCollection en tableau classique php
+
+        $roles[] = 'ROLE_USER';
+
+        /*
+        dump($this->userRoles); // Affiche un tableau complexe de typer ArrayCollection
+        dump($roles); // Affiche un tableau simple avec simplement le titre des roles
+        die(); // Pour arrèter le script
+        */
+        return $roles; // On retourne les roles (le titre des roles)
     }
 
     // Fonction qui retourne le password (dans notre cas il s'appelle $hash)
@@ -286,6 +309,35 @@ class User implements UserInterface
 
     public function eraseCredentials(){
         // Utile si on devait stocker en dur le password utilisateur, ou d'autre info sensible (mais pas dans notre cas et c'est mieux comme cela)
+    }
+
+
+    /**
+     * @return Collection|Role[]
+     */
+    public function getUserRoles(): Collection
+    {
+        return $this->userRoles;
+    }
+
+    public function addUserRole(Role $userRole): self
+    {
+        if (!$this->userRoles->contains($userRole)) {
+            $this->userRoles[] = $userRole;
+            $userRole->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserRole(Role $userRole): self
+    {
+        if ($this->userRoles->contains($userRole)) {
+            $this->userRoles->removeElement($userRole);
+            $userRole->removeUser($this);
+        }
+
+        return $this;
     }
     
 }
