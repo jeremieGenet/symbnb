@@ -7,6 +7,7 @@ use App\Entity\Role;
 use App\Entity\User;
 
 //use Cocur\Slugify\Slugify; // A ajouter pour se servir de la classe Slugify
+use App\Entity\Booking;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use App\Entity\Ad; // A ajouter pour se servir de la classe Ad
@@ -99,7 +100,7 @@ class AppFixtures extends Fixture
             // Par défaut la méthode paragraphs() renvoie un tableau, c'est pour cela qu'il faut formater les paragraphes (join est une méthode php qui sépare les éléments d'un tableau)
             $content = '<p>' . join('</p><p>', $faker->paragraphs(5)).'</p>'; // Va générer 5 paragraphes formatés en html par les balise p
 
-            // Pour chaque annonce, on selection un author au hasard (ainsi à la fin de la boucle)
+            // Pour chaque annonce, on sélection un utilisateur au hasard (entre 0 et le nombre d'utilisateur disponible, le "-1" parce que c'est un tableau)
             $user = $users[mt_rand(0, count($users) -1)];
 
             // Ici on rempli les "champs" de la table ad (annonce) de notre bdd. En fait on rempli les seteur des la classe Ad
@@ -111,7 +112,7 @@ class AppFixtures extends Fixture
                 ->setRooms(mt_rand(1, 5))
                 ->setAuthor($user); // author sera le user déterminé un peu plus haut de façon random
 
-                // GESTION DES FAKES IMAGE de la collection
+                // GESTION DES FAKES IMAGES de la collection
                 // Seconde boucle qui va permettre d'ajouter dans chaque annonce entre 2 et 5 images
                 for($j = 1; $j <= mt_rand(2, 5); $j++){
                     $image = new Image();
@@ -123,6 +124,35 @@ class AppFixtures extends Fixture
 
                     $manager->persist($image);
                 }
+
+            // GESTION DES RESERVATIONS
+            for($j = 1; $j <= mt_rand(0, 10); $j++){
+                $booking = new Booking();
+
+                // $createAt et $startDate sont des objet de type DateTime de php
+                $createdAt = $faker->dateTimeBetween('-6 months'); // le "('-6 months')" signifie entre il y a 6 mois et maintenant
+                $startDate = $faker->dateTimeBetween('-3 months'); // $startDate est la date de début de la réservation
+                // GESTION DE LA DATE DE FIN DE LA RESERVATION
+                $duration = mt_rand(2, 8); // $duration représente la durée du séjour (entre 2 et 8)
+                // $endDate correspond à la date de fin de la réservation soit : la date de debut ($startDate) + la duréé ($duration) = la date de fin ($endDate)
+                // ASTUCE : 'clone" permet ici de cloner la date de départ mais ne pas altérer la date de départ que l'on a configuré plus haut (dans le but que $endDate et $startDate ne soit pas les mêmes)
+                $endDate = (clone $startDate)->modify("+$duration days"); // la méthode modify() de php permet d'ajouter ou enlever des jours à une date
+                $amount = $ad->getPrice() * $duration; // Le montant de la réservation vaudra le prix de l'annonce x le nombre de jours du séjour ($duration)
+                $booker = $users[mt_rand(0, count($users) -1)]; // le réservateur sera un utilisateur au hasard (entre 0 et le nombre d'utilisateur disponible, le "-1" parce que c'est un tableau)
+                $comment = $faker->paragraph();
+
+                // On rempli les 'champs' de la table booking (réservation) de notre bdd
+                $booking->setBooker($booker)
+                        ->setAd($ad)
+                        ->setStartDate($startDate)
+                        ->setEndDate($endDate)
+                        ->setCreateAt($createdAt)
+                        ->setAmount($amount)
+                        ->setComment($comment);
+
+                $manager->persist($booking);
+
+            }
 
             $manager->persist($ad);
         }

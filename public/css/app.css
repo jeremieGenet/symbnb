@@ -29,3 +29,11 @@ div.carousel-caption{
     max-width: 30px;
     max-height: 30px;
 }
+
+/* Style des dates qui sont déja réservées et des dates qui précèdent la date du jour dans le calendrier (dans le fichier showBooking.html.twig) */
+.disabled ,.disabled-date{
+    color: firebrick !important;
+}
+.day:hover{
+    color: green;
+}

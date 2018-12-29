@@ -5,7 +5,7 @@
 namespace App\Form;
 
 use App\Entity\Ad;
-use App\Form\ApplicationType;
+use App\Form\ApplicationType; // CLASSE MAISON (dans laquelle on retrouvera des méthodes utiles aux formulaires de l'application)
 use App\Form\ImageType;
 //use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -26,6 +26,7 @@ class AnnonceType extends ApplicationType // RAPPEL: ApplicationType s'extends l
     // La méthode getConfig() provient de la classe ApplicationType dans laquel se trouve mes méthodes faites maison
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        // Représente les champs que le créateur de l'annonce devra remplir
         $builder
             ->add('title',
              TextType::class,

@@ -1,0 +1,22 @@
+{# Page d'erreur 403 (Interdiction) créé manuellement dans le but d'accéder à un affichage personnalisé lors d'une telle erreur #}
+{# POUR TESTER UNE PAGE D'ERREUR IL FAUT DANS L'URL TAPER : localhost/_error/403 ou dans le fichier .env modifier "APP_ENV=dev" en "APP_ENV=prod" pour signifier que l'on passe en production #}
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Ressource interdite{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <h1>Oups ! La page que vous cherchez vous est interdite !</h1>
+        <div class="alert alert-danger">
+            <p>Vous n'avez pas le droit d'accéder à cette ressource !</p>
+        </div>
+
+        <a href="{{ path('homepage') }}" class="btn btn-primary">Retour à l'accueil</a>
+        <a href="{{ path('ads_show') }}" class="btn btn-primary">Voir nos annonces</a>
+        
+    </div>
+
+{% endblock %}

@@ -1,0 +1,119 @@
+{# FORMULAIRE DE RESERVATION #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Réserver l'annonce : {{ ad.title }} !{% endblock %}
+
+{% block stylesheets %}
+    {# Lien copier à https://cdnjs.com/libraries/bootstrap-datepicker, qui permet une style d'affichage de calendrier plus flexible #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" />
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Réserver pour l'annonce : {{ ad.title }} </h1>
+        {# Rappel: getFullName est une méthode de l'entité User.php qui return le nom et prénom et ici de l'auteur de l'annonce #}
+        <p>Vous êtes sur le point de réservez le bien se <strong>{{ ad.author.getFullName }}</strong></p>
+        
+        {{ form_start(form) }}
+        <div class="alert alert-light">
+            <h2>Commencez par nous dire quelles sont les dates qui vous interessent !</h2>
+            <div class="row">
+                <div class="col">
+                    {{form_row(form.startDate)}} {# Affichage du champs startDate #}
+                </div>
+                <div class="col">
+                    {{form_row(form.endDate)}} {# Affichage du champs endDate #}
+                </div>
+            </div>
+            <!-- Montant et nombre de jour du séjour (ces 2 span sont dynamiquement modifiés via javascript et la fonction calculateAmount() plus bas -->
+            <h4>Montant du séjour : <span id="amount">...</span> &euro;</h4>
+            <span id="days">0</span> nuit(s) à {{ad.price}} / nuit
+
+            <h4 class="mt-3"m>Vous avez un commentaire ?</h4>
+            {# Affichage de la zone de commentaire #}
+            {{ form_row(form.comment)}} 
+        </div>
+
+        
+        <h2>Vous avez terminé !</h2>
+        <p>Vacances de rêve ? Hébergement pour le boulot ? Peu importe, on est avec vous !</p>
+
+        <button type="submit", class="btn btn-success">Je réserve</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+
+    {# BOOTSTRAP DATEPICKER UXSOLUTION (un calendrier Javascript qui s'adapte au thème bootstrap) #}
+    {# Lien copier à https://cdnjs.com/libraries/bootstrap-datepicker, qui permet une style d'affichage de calendrier plus flexible #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        // Fonction qui permet le fonctionnement du calendrier Datepicker uxsolution
+        // JQUERY : Quand le document est prêt ($(document).ready), tu exécutes la fonction...
+        $(document).ready(function(){
+            // On appel le datepicker() sur l'id des champs ou l'on veut notre calendrier (champs de début et fin de résa)
+            $('#booking_startDate, #booking_endDate').datepicker({ 
+                format: 'dd/mm/yyyy', // OPTION 1 : On change le format de date pour le mettre au format français (voir documentation)
+                datesDisabled: [      // OPTION 2 : Permet de donner des date non-sélectionnable avec en paramètre un tableau des dates non sélectionnables
+                    // Boucle sur (day) que sera les dates indisponibles de l'annonces (getNotAvailableDays() est la fonction créé dans le fichier Ad.php et renvoie un objet de type DateTime)
+                    {% for day in ad.getNotAvailableDays %} 
+                        // On rempli le tableau de cette chaine de caractères (qui est une date) avec une virgule (ce qui séparera les différentes dates reçue)
+                        "{{ day.format('d/m/Y') }}", // On modifie "day" qui est un objet de type DateTime au format fr
+                    {% endfor %}
+                ],
+                startDate: new Date()
+            }); 
+
+            // On Veut que la fonction calculateAmount() soit appellée à chaque changement de date dans les champs d'arrivée et départ pour cela...
+            // On sélectionne nos 2 champs (arrivée et départ) sur lesquel on applique l'évenement "change()" qui appellera la fonction calculateAmount()
+            $('#booking_startDate, #booking_endDate').on('change', calculateAmount);
+        });
+
+        // CALCUL DU MONTANT DU SEJOUR (jour * prix)
+        function calculateAmount(){
+            // ON RECUPERE LES DATE DE DEBUT ET FIN DE SEJOUR (et on les mets au format internationnal pour que javascript les comprennent)
+            // "new Date" permet de construire un objet Date Javascript dans lequel on demande à jquery de récup la valeur du champs id= booking_startDate.
+            // mais javascript s'attend à une date internationnal de type 2018-09-21, alors qu'il reçoit une date de type fr 21/09/2018 alors... 
+            // il faut utiliser la méthode replace() dans laquelle on va créer une REGEX pour transformer la date de type fr en format international
+            
+            const startDate = new Date($('#booking_startDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/, '$3-$2-$1')); 
+            const endDate = new Date($('#booking_endDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/, '$3-$2-$1'));
+            /*
+                Explication de la Regex
+
+                on veut remplacer une date de type fr 21/09/2018 par une date de type inter soit 2018-09-21
+                1) Représenter dans notre Regex le "21" suivi du "/" du 21/09/2018
+                => on écrit "\d+" pour dire que l'on veut un nombre ou plus suivi d'un slash "/" lui même échapper par un antislash "\" 
+                ce qui donne \d+\/ qui réprésente donc "21/", on met des parenthèse pour capturer le chiffre soit : (/d+)\/
+                2) Représenter dans la Regex le "09" suivi du "/" du 21/09/2018
+                => on fait la même chose que le "21" soit (/d+)\/
+                3) Représenter dans la Regex le "2018" du 21/09/2018
+                => on écrit \d{4} pour dire qu'on veut quatre chiffres et on le capture, ce qui donne : (\d{4})
+                4) On représente la date complète :
+                => soit (\d+)\/(\d+)\/(\d{4}) que l'on met entre 2 slash pour dire à javascript qu'il s'agit d'une Regex soit /(\d+)\/(\d+)\/(\d{4})/
+                On a la réprésentation de notre date fr et chaque paire de parenthèse capture un des 3 chiffre que compose la date
+                A ce stade nous avons le premier argument de la méthore replace(), le second argument est par quoi on le remplace
+                5) On remplace la Regex par le format voulu (second argument de la fonction replace())
+                Ce second argument permet de donnée un ordre à ce qui a été capturé
+                => Un "$" représente une capture, et sa position, soit un des chiffre dans une paire de parenthèse est si on met un nombre à coté du "$" cela signifie sa position
+                donc "$3" représente pour notre exemple la troisième partie de la date capturé soit le "2018" et si on le position en premiere position alors,
+                on signifie qu'on le change de place
+            */
+
+            // ON COMPARE LES DATE POUR SAVOIR LE NB DE JOUR DU SEJOUR (que l'on multipliera par le prix de l'annonce au jour) :
+            if(startDate && endDate && startDate < endDate){ // Si il y a une date de début et de fin, et si la date de début est inférieur celle de fin alors...
+                const DAY_TIME = 24 * 60 * 60 * 1000 // DAY_TIME représente le nb de milisecondes dans un jour (24heurs * 60sec * 60sec * 1000milisecondes)
+                // Calcul de l'interval entre les deux dates (.getTime permet de transformer l'objet Javascript en un timestamp en miliseconde)
+                const interval = endDate.getTime() - startDate.getTime(); // interval est alors un chiffre en milisecondes maintenant (qui représente le nb de millisecondes entre le jour d'arrivée et le jour de départ)
+                const days = interval / DAY_TIME; // Si on divise interval par le nb de milliseconde dans un jour on obtient alors l'interval en jours
+                const amount = days * {{ ad.price }}; // On multiplie le nombre de jour du séjour par le prix par jour de l'annonce (ad.price) 
+
+                $('#days').text(days); // On récupère le span id="days" et on remplace par le text par la valeur "days" (soit le nombre de jours choisi par l'utilisateur)
+                $('#amount').text(amount.toLocaleString('fr-FR')); // On récup le span du montant pour le remplacer par le montant calculé et on le met au format fr (avec euro, des virgule pour les milliers...)
+            }
+        }
+
+    </script>
+{% endblock %}

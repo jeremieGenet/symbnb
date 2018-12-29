@@ -26,7 +26,8 @@
                 
                 
             {% else %}
-                <a href="#" class="btn btn-primary">Réserver !</a>
+                <!-- Lien qui renvoie vers la page de réservation -->
+                <a href="{{ path('booking_create', {'slug': ad.slug}) }}" class="btn btn-primary">Réserver !</a>
             {% endif %}
 
         </div>

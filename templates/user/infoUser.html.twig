@@ -2,6 +2,7 @@
 
 {% extends 'base.html.twig'%}
 
+{# Rappel: getFullName est une méthode de l'entité User.php qui return le nom et prénom et ici l'utilisateur connecté #}
 {% block title %}Page de {{user.getFullName}}{% endblock %}
 
 {% block body %}

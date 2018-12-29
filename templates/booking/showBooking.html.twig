@@ -1,0 +1,98 @@
+{# PAGE DE DESCRIPTION DE LA RESERVATION #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservation n°{{ booking.id }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Votre réservation n° {{ booking.id }} </h1>
+
+        {# AFFICHAGE D'UN MESSAGE DE VALIDATION DE LA RESERVATION #}
+        {# Si Il y a dans l'url la variable "booking_success" alors affichage message de validation en vert ici #}
+        {% if app.request.query.get('booking_success') %} {# la variable app.request représente la requête HTTP, rappel: app est une variable global dans twig #}
+            <div class="alert alert-success">
+                <h4 class="alert-heading">Bravo !</h4>
+                <p>
+                    Votre réservation auprès de 
+                    <strong>
+                        <a href="{{ path("user_show",{'slug': booking.ad.author.slug}) }}">{{booking.ad.author.getFullName}}</a>
+                    </strong>
+                    pour l'annonce
+                    <strong>
+                        <a href="{{ path("ad_show", {'slug': booking.ad.slug}) }}">{{booking.ad.title}}</a>
+                    </strong>
+                    a bien été prise en compte !
+                </p>
+            </div>
+        {% endif %}
+
+        <div class="row">
+
+            <!-- DESCRIPTION DE LA RESERVATION -->
+            <div class="col">
+                <div class="alert alert-light">
+                    <h2>Détails</h2>
+                    <dl class="row">
+                        <dt class="col-md-4">Numéro</dt>
+                        <dd class="col-md-8">{{booking.id}}</dd>
+                        <dt class="col-md-4">Date d'arrivée</dt>
+                        <dd class="col-md-8">{{booking.startDate | date('d/m/Y')}}</dd>
+                        <dt class="col-md-4">Date de départ</dt>
+                        <dd class="col-md-8">{{booking.endDate | date('d/m/Y')}}</dd>
+                        <dt class="col-md-4">Nombre de nuits</dt>
+                        <dd class="col-md-8">{{booking.duration}}</dd>
+                        <dt class="col-md-4">Montant total</dt>
+                        <dd class="col-md-8">{{booking.amount}} &euro;</dd>
+                        <dt class="col-md-4">Commentaire</dt>
+                        <dd class="col-md-8">{{booking.comment}}</dd>
+                    </dl>
+
+                    <hr>
+
+                    <!-- DESCRIPTION DE L'HOTE DE LA RESERVATION -->
+                    <h2 class="alert-heading">Votre hôte</h2>
+
+                    <div class="row mb-3">
+                        <div class="col-3">
+                            <!-- Lien vers le propriétaire de l'annonce et sa description -->
+                            <a href="{{ path('user_show', {'slug': booking.ad.author.slug}) }}">
+                                <img src="{{ booking.ad.author.picture }}" class="avatar avatar-medium" alt="Avatar de {{booking.ad.author.getFullName}}">
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <h4>
+                                <!-- Lien vers le propriétaire de l'annonce et sa description -->
+                                <a href="{{ path('user_show', {'slug': booking.ad.author.slug}) }}">{{booking.ad.author.getFullName}}</a>
+                            </h4>
+                            <!-- Info sur le nb d'annonces de propriétaire de l'annonce -->
+                            <span class="badge badge-info">{{booking.ad.author.ads | length}} annonces</span>
+                        </div>
+                    </div>
+                    {{booking.ad.author.description | raw}}
+
+                    <a href="{{path('user_show', {'slug': booking.ad.author.slug}) }}" class="btn btn-primary">{{booking.ad.author.firstName}}</a>
+                </div>
+            </div>
+
+            <!-- DESCRIPTION DE L'ANNONCE RESERVEE -->
+            <div class="col">
+                <div class="alert alert-light">
+                    <h2 class="alert-heading">Votre hébergement</h2>
+
+                    <h4>
+                        <a href="{{ path('ad_show', {'slug': booking.ad.slug}) }}">{{booking.ad.title}}</a>
+                    </h4>
+                    <!-- Class="img-fluid" permet à bootstrap de signifier à l'image de s'inclure dans la colonne (et non dans la page en entier) -->
+                    <img src="{{booking.ad.coverImage}}" alt="Image de {{booking.ad.title}}" class="img-fluid">
+
+                    {{booking.ad.content | raw}}
+
+                    <!-- Lien qui méne à l'annonce réservée -->
+                    <a href="{{ path('ad_show', {'slug': booking.ad.slug}) }}" class="btn btn-primary">Plus d'informations</a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}
