@@ -1,0 +1,56 @@
+{# PAGE D'ADMINISTRATION DE L'ENSEMBLE DES RESERVATIONS #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration des réservations !{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="my-5">Gestion de Réservations</h1>
+
+        <table class="table table-hover alert alert-dark">
+            <thead>
+                <tr class="bg-primary">
+                    <th>Id</th>
+                    <th>Date</th>
+                    <th>Visiteur</th>
+                    <th>Annonce</th>
+                    <th>Commentaire réservation</th>
+                    <th>Durée</th>
+                    <th>Montant</th>
+                    <th>Modifier</th>
+                    <th>Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+            
+                {# Boucle dans le but de multiplier ce "<tr>" autant de fois qu'il y a de réservation #}
+                {% for booking in bookings %} {# RAPPEL: comments représente un tableau de réservations #}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.createdAt | date('d/m/y H:i') }}</td> <!-- LA DATE ET L'HEURE -->
+                    <td>
+                        <img src="{{ booking.booker.picture }}" alt="{{ booking.booker.getFullName }}" class="avatar avatar-mini mr-2">
+                        {{ booking.booker.getFullName }}
+                    </td>
+                    <td>{{ booking.ad.title }}</td>
+                    <td>{{ booking.comment }}</td>
+                    <td>{{ booking.getDuration }}</td>
+                    <td>
+                        <span class="badge badge-dark">{{ booking.amount | number_format(2, ',') }} &euro;</span>
+                    </td>
+                    <td>
+                        <!-- Lien "BOUTON" auquel on passe le chemin crée dans AdminBookingController() et sa fonction edit() -->
+                        <a href="{{ path('admin_booking_edit', {'id': booking.id}) }}" class="btn btn-info"><i class="fas fa-pen"></i></a>
+                        
+                    </td>
+                    <td>
+                        <!-- Lien "BOUTON" auquel on passe le chemin crée dans AdminBookingController() et sa fonction delete() -->
+                        <a href=" {{ path('admin_booking_delete', {'id': booking.id}) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -39,7 +39,7 @@ class AdController extends AbstractController
      * Permet de Gérer notre formulaire de création d'annonces
      * Paramètre Request $request est une injection de dépendance (permettra de récupérer le post, la requète du formulaire via sa méthode handleRequest())
      * Paramètre ObjectManager $manager est une injection de dépendance (permet de faire persister et envoyer le contenu du formulaire dans la bdd)
-     * Param @IsGranted permet un usage strictement qu'aux utilisateurs connectés ("ROLE_USER") de créer une annonce
+     * Param "@IsGranted" permet un usage strictement qu'aux utilisateurs connectés ("ROLE_USER") de créer une annonce
      * 
      * @Route("/ads/newAd", name="ads_create")
      * @IsGranted("ROLE_USER")

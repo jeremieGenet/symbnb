@@ -1,0 +1,52 @@
+{# PAGE DE MODIFICATION DES COMMENTAIRES EN MODE ADMINISTRATEUR #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modif commentaire n°{{ comment.id }}{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <h1 class="bg-primary my-4">Modification du commentaire n°<strong>{{ comment.id }}</strong></h1>
+        {# DETAIL DU COMMENTAIRE A MODIFIER #}
+        <div class="card alert-info my-3">
+            <div class="card-header">
+                <h5 class="card-title"><strong>Annonce liée : </strong>{{comment.ad.title}}</h5>
+            </div>
+            <div class="card-body">
+                
+                
+                <p>
+                    <strong>Auteur : </strong> &nbsp; {{comment.author.getFullName}} &nbsp;
+                    <img src="{{ comment.author.picture }}" alt="{{comment.author.getFullName}}" class="avatar avatar-mini mr-2">
+                </p>
+                <p><strong>Date de création du commentaire : &nbsp;</strong>{{ comment.createdAt | date('d/m/Y H:i') }}</p>
+                <p><strong>Note du commentaire : &nbsp;</strong>{{ comment.rating }}</p>
+            </div>
+        </div>
+
+        {{ form_start(form) }}
+
+                {# FORMULAIRE DE MODIFICATION DU COMMENTAIRE #}
+                <div class="card bg-secondary">
+                    <div class="card-header">
+                        <h4 class="card-title">Corriger le commentaire ?</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ form_widget(form) }}
+
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i>
+                            Enregistrer les modifications
+                        </button>
+
+                    </div>
+                </div>
+
+        {{ form_end(form) }}
+        
+    </div>
+{% endblock %}
+
+

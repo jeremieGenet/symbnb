@@ -13,7 +13,8 @@
             <h1>{{ ad.title }}</h1>
             <p>{{ ad.introduction }}</p>
             <p class="h2">
-                <strong>{{ ad.rooms }} chambres</strong> pour <strong>{{ ad.price }} euros</strong> par nuit
+                <!-- Filtre twig number_format() permt de formater un nombre selon le format désiré (parm1= nb de chiffre après la virgule, param2= si on veut que la séparation soit avec une virgule, un point au autre -->
+                <strong>{{ ad.rooms }} chambres</strong> pour <strong>{{ ad.price | number_format(2, ',')}} euros</strong> par nuit
             </p>
             
             <!-- Si l'utilisateur est connecté, et que l'utilisateur connecté est le même que l'auteur de l'annonce alors on affiche le lien de modification sinon le lien de réservation -->
@@ -39,7 +40,7 @@
             <div class="col-md-8 mb-3">
                 {{ ad.content | raw }} {# Filtre 'raw' affiche le texte sans protection (permet donc l'interprétation HTML) #}
 
-                {# Carousel des Image de l'annonce #}
+                {# Carousel des Images de l'annonce #}
                 {# Carousel copier de bootstrap dans Component > carousel, puis modifié pour nos besoins #}
                 <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                     <ol class="carousel-indicators">
@@ -70,6 +71,50 @@
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
+
+                <hr>
+
+                {# AFFICHAGE DES COMMENTAIRES DE L'ANNONCE #}
+                {# Si il y a des commentaires (si la taille du tableau ad.comments est supérieur à 0 alors... #}
+                {% if ad.comments|length > 0 %}
+                    <h2 class="mb-3">Commentaires de nos voyageurs :</h2>
+
+                    <div class="alert alert-info">
+                        <h4 class="alert-heading text-center">
+                            <div class="row align-items-center"> <!-- La classe "align-items-center permet de centrer dans une div tout type d'icons ou items -->
+                                <div class="col">
+                                    Note globale donnée par nos voyageurs
+                                </div>
+                                <div class="col">
+                                    <!-- SYSTEME DE MOYENNE TOTALE DES "ETOILES" DES COMMENTAIRES RECUS -->
+                                    {# On inclu le fichier qui est dans les partial, en spécifiant (avec "with") que ce fichier possède une variable rating qui
+                                    vaut ad.avgRatings pour signifier à twig que l'on fait appel à la fonction getAvgRatings() de l'entité Ad.php (calul de moyenne des notes) #}
+                                    {% include 'partials/rating.html.twig' with {'rating': ad.avgRatings} %}
+                                    <br>
+                                    <small>(Calculée sur {{ad.comments|length}} avis)</small>
+                                </div>
+                            </div>
+                        </h4>
+                    </div>
+
+                    {# Boucle qui affiche les commentaires de l'annonce #}
+                    {% for comment in ad.comments %}
+                        <div class="bg-light rounded mb-3 py-3 px-3">
+                            <strong>{{ comment.author.firstName }}</strong> a dit :
+                            <blockquote>
+                                {{ comment.content }}
+                            </blockquote>
+                            <strong>Note donnée :</strong> 
+
+                            <!-- SYSTEME DE NOTATION "ETOILES" DES ANNONCES (RATING) DANS LES COMMENTAIRES (comment.rating) -->
+                            {# On inclu le fichier qui est dans les partial, en spécifiant (avec "with") que ce fichier possède une variable rating qui vaut comment.rating #}
+                            {% include 'partials/rating.html.twig' with {'rating': comment.rating} %}
+
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h2>Cette annonce n'a pas encore de commentaires !</h2>
+                {% endif %}
 
             </div>
             <!-- INFO DU PROPRIETAIRE -->

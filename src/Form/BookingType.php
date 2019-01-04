@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use App\Form\ApplicationType; // CLASSE MAISON (dans laquelle on retrouvera des méthodes utiles aux formulaires de l'application)
 use App\Form\DataTransformer\FrenchToDateTimeTransformer; 
 
+
+// Formulaire utilisateur qui permet de faire une réservation
 class BookingType extends ApplicationType // RAPPEL: ApplicationType (permet la config "maison" des champs de formulaire) s'extends lui-même de AbstractType
 {
 
@@ -45,7 +47,11 @@ class BookingType extends ApplicationType // RAPPEL: ApplicationType (permet la 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Booking::class,
+            'data_class' => Booking::class, 
+            'validation_groups' => [ // ICI ON PEUT MODIFIER les autorisations, contraintes de notre formulaire. (ici ce formulaire accepte les validations par default et front)
+                'Default',
+                'front'
+            ]
         ]);
     }
 }

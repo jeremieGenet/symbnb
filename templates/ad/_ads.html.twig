@@ -6,8 +6,19 @@
         <div class="card bg-light mb-3">
             <div class="card-header text-center">
                 {# On aurait pu écrire aussi : {{ad.rooms}} chambres, <strong>{{ad.price}}&euros; grace à l'intelligence de twig #}
-                {{ad.getRooms}} chambres, <strong>{{ad.getPrice}} euros / nuit</strong> <br>
-                <small>Pas encore noté</small>
+                <!-- Filtre twig number_format() permt de formater un nombre selon le format désiré (parm1= nb de chiffre après la virgule, param2= si on veut que la séparation soit avec une virgule, un point au autre -->
+                {{ad.getRooms}} chambres à <strong>{{ad.getPrice | number_format(2, ',')}} euros par nuit</strong> <br>
+
+                {# Si il y a des commentaires à notre annonce (si le tableau ad.comments est supérieur à 0) alors... #}
+                {% if ad.comments|length > 0 %}
+                    <!-- SYSTEME DE MOYENNE TOTALE DES "ETOILES" DES COMMENTAIRES RECUS -->
+                    {# On inclu le fichier qui est dans les partial, en spécifiant (avec "with") que ce fichier possède une variable rating qui
+                    vaut ad.avgRatings pour signifier à twig que l'on fait appel à la fonction getAvgRatings() de l'entité Ad.php (calul de moyenne des notes) #}
+                    {% include 'partials/rating.html.twig' with {'rating': ad.avgRatings} %}
+                {% else %}
+                    <small>Pas encore noté</small>
+                {% endif %}
+
             </div>
 
             {# lien vers la liste des annonces via une variable twig déclarée au début de la boucle #}
@@ -28,13 +39,13 @@
 
                 <!-- Si l'utilisateur est connecté, et que l'utilisateur connecté est le même que l'auteur de l'annonce alors on affiche les lien du visu, de modif et suppression-->
                 {% if app.user and app.user == ad.author %}
-                    <a href="{{ url_to_list_ads }}" class="btn btn-secondary">Voir mon annonce</a>
+                    <a href="{{ url_to_list_ads }}" class="btn btn-secondary float-right">Voir mon annonce</a>
                     <a href="{{ path('ad_edit', {'slug': ad.slug}) }}" class="btn btn-info mt-1">Modifier mon annonce</a>
                     <a href="{{ path('ad_delete', {'slug': ad.slug}) }}" class="btn btn-danger mt-1" 
                     onclick="return confirm(`Etes-vous sur de vouloir supprimer l'annonce : {{ ad.title }} ?`)">Supprimer mon annonce
                     </a>
                 {% else %} {# Sinon si l'utilisateur n'est pas connecté, il aura seulement accès à la visu de l'annonce #}
-                    <a href="{{ url_to_list_ads }}" class="btn btn-secondary">En savoir plus !</a>
+                    <a href="{{ url_to_list_ads }}" class="btn btn-secondary float-right">En savoir plus !</a>
                 {% endif %}
 
             </div>

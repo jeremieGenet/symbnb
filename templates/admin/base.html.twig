@@ -1,4 +1,4 @@
-{# TEMPLATE DE BASE DU SITE#}
+{# TEMPLATE DE BASE DE L'ADMINISTRATION #}
 
 <!DOCTYPE html>
 <html>
@@ -20,8 +20,8 @@
     </head>
     <body>
 
-        {# MON HEADER #}
-        {% include'partials/header.html.twig' %}
+        {# MON HEADER D'ADMINISTRATION#}
+        {% include'admin/partials/header.html.twig' %}
 
         {% block body %}
         
@@ -36,7 +36,7 @@
         {% block javascripts %}{% endblock %}
     </body>
 
-    {# MON FOOTER #}
-    {% include 'partials/footer.html.twig' %}
+    {# MON FOOTER D'ADMINISTRATION #}
+    {% include 'admin/partials/footer.html.twig' %}
 
 </html>

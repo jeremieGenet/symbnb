@@ -1,0 +1,14 @@
+{# SYSTEME DE NOTATION "ETOILES" DES ANNONCES (RATING) DANS LES COMMENTAIRES (comment.rating) #}
+
+<span class="rating">
+    {# On fait une boucle dans laquel "i" vaudra 1 à 5 soit une boucle qui tourne 5 fois (notre "rating" maximum) #}
+    {% for i in 1..5 %}
+        {# Si i est inférieur ou égal à la note (rating qui est une note de 1 à 5) alors... #}
+        {% if i <= rating %}
+            <i class="fas fa-star"></i> {# On affiche une etoile pleine #}
+        {# Sinon... #}
+        {% else %}
+            <i class="far fa-star"></i> {# On affiche une etoile vide #}
+        {% endif %}
+    {% endfor %}
+</span>

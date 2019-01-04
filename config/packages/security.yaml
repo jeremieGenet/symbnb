@@ -13,6 +13,17 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        admin: # Création d'un autre firewall nommé "admin" (important qu'il soit au dessus de "main", puisqu'il possède un pattern, qu'il est plus spécifique que "main")
+            pattern: ^/admin # Le paterne du firewall est un Regex qui permet de délimiter la partie à sécuriser (ici on sécurise toutes les url qui commencent par "/admin")
+            anonymous: true # Est-ce qu'on peut y accéder de façon annonyme (utilisateur non-connecté) : ici oui, parce qu'on a une page pour le login administateur ("/admin/login")
+            # Le provider sera celui configuré plus haut (celui dans la database à partir de l'entité User.php)
+            provider: in_database # Si il y a des connection à l'url /admin (et ce sera forcément le cas), il faut dire qui est le pourvoyeur (provider)
+            form_login: # Le formulaire de connexion administrateur est différent de la partie "main" (plus bas), donc il faut le configurer ici aussi
+                login_path: admin_account_login # On configure le chemin pour aller au formulaire de login (le nom de la route défini dans le controller AdminAccountController.php)
+                check_path: admin_account_login # On config le chemin de vérification des information données dans le formulaire de login sont vraie (ici c'est le même que login_path)
+            logout:
+                path: admin_account_logout # On config le chemin lorsqu'on se déconnecte (le nom de la route est défini dans la fonction logout() dans le controller AdminAccountController.php)
+                target: homepage # Et le chemin lorsqu'on se déconnecte sera la page d'accueil
         main:
             anonymous: true
 
@@ -35,6 +46,9 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
+    # Gestion des ACL (qui veut dire Acces Controlleur) (permet de faire une gestion plus générale des accès en fonction des rôles, sans passer par les controlleurs)
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY } # ici on précise que ce chemin est accessible à "IS_AUTHENTICATED_ANONYMOUSLY", rôle qui represente un utilisateur non connecté (ATTENTION, l'ordre des autorisations est importante)
+         - { path: ^/admin, roles: ROLE_ADMIN } # ici cela veut dire que les chemin de type /admin... nécessiterons obligatoirement le 'ROLE_ADMIN' et renvoie par défaut au formulaire de connexion
+         
         # - { path: ^/profile, roles: ROLE_USER }

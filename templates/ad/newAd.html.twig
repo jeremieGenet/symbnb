@@ -13,14 +13,43 @@ et ici le code des thèmes est dans le fichier ad/_collection.html, s'il était 
 {% block body %}
 
     <div class="container">
-        <h1>Créer une nouvelle annonce</h1>
+        <h1 class="my-4">Créer une nouvelle annonce</h1>
 
         {{ form_start(form) }}
 
-            {# AFFICHAGE DE NOTRE FORMULAIRE #}
-            {{ form_widget(form) }} {# form_widget() Affiche un champs ou un groupe de champs #}
+            <div class="row">
+                <div class="col">
+                    <div class="alert alert-secondary">
+                        <h2>Informations générales</h2>
+                        <hr>
+                        {{ form_row(form.title) }}
+                        {{ form_row(form.slug) }}
+                        {{ form_row(form.price) }}
+                        {{ form_row(form.rooms) }}
+                    </div>
+                    
+                    <div class="alert alert-secondary">
+                        <h2>Images de l'annonce</h2>
+                        <hr>
+                        {{ form_row(form.coverImage) }}
+                        {{ form_row(form.images) }}
+                        {# Le bouton "Ajouter une image" se trouve dans le fichier '_collection.html.twig' généré à l'appel du thème twig personnalisé #}
+                    </div>
 
-            <button type="submit" class="btn btn-primary">Créer la nouvelle annonce</button>
+                </div>
+                <div class="alert alert-secondary">
+                    <h2>Détails de l'annonce</h2>
+                    <hr>
+                    {{ form_row(form.introduction) }}
+                    {{ form_row(form.content) }}
+                </div>
+            </div>
+
+            
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check"></i> &nbsp;
+                Créer la nouvelle annonce
+            </button>
 
         {{ form_end(form) }} {# form_end() va, par défaut, forcer l'affichage de tout les champs absents #}
     </div>
@@ -29,7 +58,7 @@ et ici le code des thèmes est dans le fichier ad/_collection.html, s'il était 
 
 
 {% block javascripts %}
-    {# Script JQUERY qui va permettre lorsqu'on appuie sur le boutton 'Ajouter/Supprimer une image' de faire apparaitre l'entrée de l'url et de la légende ou la supprimée #}
+    {# Script JQUERY qui va permettre lorsqu'on appuie sur le boutton 'Ajouter/Supprimer une image' de faire apparaitre l'entrée de l'url et de la légende ou la supprimer #}
     <script src="/js/ad.js"></script>
 {% endblock %}
 

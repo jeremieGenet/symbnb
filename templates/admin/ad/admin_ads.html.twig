@@ -1,0 +1,55 @@
+{# PAGE D'ADMINISTRATION DE L'ENSEMBLE DES ANNONCES #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration des annonces !{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="my-5">Gestion des annonces</h1>
+
+        <table class="table table-hover alert alert-dark">
+            <thead>
+                <tr class="table-primary">
+                    <th><strong>Id</strong></th>
+                    <th><strong>Titre</strong></th>
+                    <th><strong>Auteur</strong></th>
+                    <th  class="text-center"><strong>Réservation</strong></th>
+                    <th><strong>Note</strong></th>
+                    <th><strong>Modifier</strong></th>
+                    <th><strong>Supprimer</strong></th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {# On veut une ligne par annonce #}
+            {% for ad in ads %}
+            
+                <tr class="table-default">
+                    <td>{{ad.id}}</td>
+                    <td>{{ad.title}}</td>
+                    <td>
+                        <img src="{{ ad.author.picture }}" alt="{{ad.author.getFullName}}" class="avatar avatar-mini mr-2">
+                        {{ad.author.getFullName}}
+                    </td>
+                    <td  class="text-center">
+                        <span class="badge badge-secondary rounded">{{ad.bookings | length}}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-secondary">{{ad.getAvgRatings | number_format(1, ',', ' ')}}</span>
+                    </td>
+                    <td>
+                        <!-- Lien auquel on passe le chemin crée dans AdminAdController() et sa fonction edit() -->
+                        <a href="{{ path('admin_ads_edit', {'id': ad.id}) }}" class="btn btn-info"><i class="fas fa-pen"></i></a>
+                    </td>
+                    <td>
+                        <!-- Lien auquel on passe le chemin crée dans AdminAdController() et sa fonction delete() -->
+                        <a href=" {{ path('admin_ads_delete', {'id': ad.id}) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

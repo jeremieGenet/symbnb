@@ -38,10 +38,11 @@ class Booking
     /**
      * le "@Assert\GreaterThan("today")" signifie que la date de départ sera obligatoirement plus grande qu'aujourd'hui (on ne peut réservé une date antérieur à celle du jour !)
      * (Rappel: "GreaterThan("today")" se base sur une date de type DateTime, donc "today" est un argument valable, mais on aurait pu mettre un nombre ou tout autre argument recevable par l'objet DateTime)
+     * On ajoute aussi un "group=front" dans le but de dire que cette contraint ne l'est pas pour ce groupe
      * 
      * @ORM\Column(type="datetime")
      * @Assert\Date(message="Attention, la date d'arrivée doit être au bon format !")
-     * @Assert\GreaterThan("today", message="La date d'arrivée doit être supérieur à la date d'aujourd'hui !")
+     * @Assert\GreaterThan("today", message="La date d'arrivée doit être supérieur à la date d'aujourd'hui !", groups={"front"})
      */
     private $startDate;
 
@@ -90,6 +91,7 @@ class Booking
         }
     }
 
+    // Permet de retourner true si les dates sont réservable (toujours disponibles)
     public function isBookableDates(){
         // 1) On récupère l'ensemble des journées pour lesquels cette annonce n'est pas disponible (sous forme d'un tableau qui contient des objets DateTime)
         $notAvailableDays = $this->ad->getNotAvailableDays(); // On utilise la fonction que l'on a créé dans BookingController.php (getNotAvailableDays())
@@ -197,12 +199,12 @@ class Booking
 
     public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
-        $this->createAt = $createAt;
+        $this->createdAt = $createdAt;
 
         return $this;
     }

@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection; // Utile à la fonction initializeSlug()
 
-use Symfony\Component\Validator\Constraints as Assert; // Utile pour ajouter des contraintes sur les attributs de notre classe (dans le but d'une validation "controlée" du formulaire d'annonce)
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\Collection; // Utile à la fonction initializeSlug()
+use Symfony\Component\Validator\Constraints as Assert; // Utile pour ajouter des contraintes sur les attributs de notre classe (dans le but d'une validation "controlée" du formulaire d'annonce)
 
 /**
  * Classe des Annonces (Le "@ORM\HasLifecycleCallbacks" prévient doctrine qu'il y a des fonctions liées au cycle de vie), utilisé dans la fonction initializeSlug() plus bas
@@ -97,12 +98,20 @@ class Ad
      */
     private $bookings;
 
+    /**
+     * Commentaire de l'annonce (Attention, ici $comments représente la note et le commentaire que l'utilisateur à rempli dans le formulaire de rendu de réservation)
+     * 
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="ad", orphanRemoval=true)
+     */
+    private $comments;
+
 
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->no = new ArrayCollection();
         $this->bookings = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     /**
@@ -120,6 +129,60 @@ class Ad
         if(empty($this->slug)){
             $slugify = new Slugify(); // Utilisation de la classe Slugify() qui possédent des méthodes de formatage
             $this->slug = $slugify->slugify($this->title); // La méthode slugify() permet de formater (ici le titre de l'annonce) en un format URL
+        }
+    }
+
+    /**
+     * Permet de récupérer le commentaire d'un auteur qu'il a pu faire sur une annonce (la note et la commentaire écrient dans le formulaire, après le séjour)
+     *
+     * @param User $author
+     * @return Comment|null
+     */
+    public function getCommentFromAuthor(User $author){
+        // On recherche si parmis tous les commentaires qui sont liés à l'annonce (ou la fonction sera placée), ...
+        // ...il y en a qui ont le même auteur que celui qui est en paramètre de la fonction
+        foreach($this->comments as $comment){ // Pour chaque commentaire(s) que j'ai dans cette annonce...
+            if($comment->getAuthor() === $author) return $comment; // Si l'auteur du commentaire est le même que celui passé en paramètre alors on retourne le commentaire
+        }
+
+        return null; // Sinon on retourne null
+    }
+
+    /**
+     * Permet de calculer la moyenne des notes (reçu en commentaire) d'une annonce
+     *
+     * @return float
+     */
+    public function getAvgRatings(){
+        // CALCULER LA SOMME DES NOTATION
+        /*      Explication du calcul qui suit:
+            - array_reduce() est une méthode php qui permet de réduire un tableau à une valeur simple,
+             2 params obligatoires (param1 le tableau à réduire, param2 une fonction callback qui précise comment réduire le tableau en param1).
+            - (Param1 de array_reduce()) : "$this->comments" qui est un tableau, mais de type ArrayCollection soit un tableau complexe 
+                et array_reduce() ne fonctionne que sur des tableau simple,
+                donc il faut appliquer la méthode toArray() qui retourne un tableau simple de n'importe quel document ou ici tableau complexe
+                soit : Param1 = $this->comments->toArray()
+            - (Param2 de array_reduce()) : la fonction callback (fonction qui bouclera sur sont second paramètre) qui précise la façon de réduire le tableau, 
+                avec en param la variable "$total" qui va comptabiliser, et "$comment" sur lequel on va boucler (chaque commentaire que l'on va recevoir)
+                Donc on va boucler sur le tableau des commentaires ($this->comments->toArray()) et on 
+                va appeller à chaque commentaire la fonction en lui passant un total ($total qui va commencer à 0) et le commentaire en lui-même ($comment)
+            - On oublie pas le 0 à la fin pour dire que la variable $total vaut 0 par défaut
+            => Finalement on retourne le total ($total) va stocker chaque note de chaque commentaire ($comment->getRating()) en commençant à 0
+            exemple: Disons que nous avons 2 commentaires notés l'un à 2 étoiles et l'autre à 4 étoiles,
+                alors $total + $comment->getRating() vaudra 0 + 2, puis 2 + 4, et fin de la boucle puisque il n'y a pas d'autre commentaire 
+                soit un "$sum" = 6
+        */
+        $sum = array_reduce($this->comments->toArray(), function($total, $comment){
+            return $total + $comment->getRating();
+        }, 0);
+
+        // FAIRE LA DIVISION POUR AVOIR LA MOYENNE
+
+        // Si le compte des commentaire est supérieur à 0 (pour qui s'il n'y a pas de commentaire on ne fasse pas une division par 0) alors...
+        if(count($this->comments) > 0){
+            return $sum / count($this->comments); // On retourne $sum divisé par le nombre de commentaire
+        }else{
+            return 0; // Sinon (s'il n'y a pas de commentaire) on retourne 0
         }
     }
 
@@ -353,4 +416,37 @@ class Ad
 
         return $this;
     }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setAd($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getAd() === $this) {
+                $comment->setAd(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 }

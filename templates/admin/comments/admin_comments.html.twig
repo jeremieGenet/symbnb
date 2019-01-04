@@ -1,0 +1,54 @@
+{# PAGE D'ADMINISTRATION DE L'ENSEMBLE DES COMMENTAIRES #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration des Commentaires !{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="my-5">Gestion des commentaires</h1>
+        
+        <table class="table table-hover alert alert-dark">
+            <thead>
+                <tr class="bg-primary">
+                    <th>Id</th>
+                    <th>Date</th>
+                    <th>Auteur</th>
+                    <th>Commentaire</th>
+                    <th>Note</th>
+                    <th>Annnonce</th>
+                    <th>Modifier</th>
+                    <th>Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+            
+                {# Boucle dans le but de multiplier ce "<tr>" autant de fois qu'il y a de commentaire #}
+                {% for comment in comments %} {# RAPPEL: comments représente un tableau de commentaires #}
+                <tr>
+                    <td>{{ comment.id }}</td>
+                    <td>{{ comment.createdAt | date('d/m/y H:i') }}</td> <!-- LA DATE ET L'HEURE -->
+                    <td>
+                        <img src="{{ comment.author.picture }}" alt="{{ comment.author.getFullName }}" class="avatar avatar-mini mr-2">
+                        {{ comment.author.getFullName }}
+                    </td>
+                    <td>{{ comment.content }}</td>
+                    <td>
+                        <span class="badge badge-dark">{{ comment.rating }}</span>
+                    </td>
+                    <td>{{ comment.ad.title }}</td>
+                    <td>
+                        <!-- Lien "BOUTON" auquel on passe le chemin crée dans AdminCommentController() et sa fonction edit() -->
+                        <a href="{{ path('admin_comments_edit', {'id': comment.id}) }}" class="btn btn-info"><i class="fas fa-pen"></i></a>
+                        
+                    </td>
+                    <td>
+                        <!-- Lien "BOUTON" auquel on passe le chemin crée dans AdminCommentController() et sa fonction delete() -->
+                        <a href=" {{ path('admin_comment_delete', {'id': comment.id}) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

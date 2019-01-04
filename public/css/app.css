@@ -13,6 +13,12 @@ div.ad-title h1, div.ad-title p{
     text-shadow: 3px 3px 3px rgba(0,0,0,0.5); /* Pour donner un ombrage au texte */
 }
 
+div.ad-title .btn{
+    margin-top: 1.5em;
+    font-size: 1.2em;
+    border-radius: 5px;
+}
+
 div.carousel-caption{
     text-shadow: 3px 3px 3px rgba(0,0,0,0.5); /* Pour donner un ombrage au texte */
 }
@@ -21,19 +27,45 @@ div.carousel-caption{
 .avatar{
     max-width: 64px;
     max-height: 64px;
-    border-radius: 50%;
 }
 
 /* Style de la photo d'avatar de l'utilisateur lorsqu'il est connecté (dans la nav bar)*/
 .avatar-mini{
     max-width: 30px;
     max-height: 30px;
+    border-radius: 15px;
 }
 
-/* Style des dates qui sont déja réservées et des dates qui précèdent la date du jour dans le calendrier (dans le fichier showBooking.html.twig) */
+/* Style des dates qui sont déja réservées et des dates qui précèdent la date du jour dans le calendrier datepicker (dans le fichier showBooking.html.twig) */
 .disabled ,.disabled-date{
     color: firebrick !important;
 }
 .day:hover{
     color: green;
 }
+
+/* Style des étoiles de notation */
+span.rating i{
+    color: goldenrod;
+}
+
+/* Tous les liens qui ont la classe alert*/
+.alert a{
+    text-decoration: none;
+}
+
+/* Tous les boutons qui ont la classe btn */
+.btn{
+    border-radius: 5px;
+}
+
+.adminNav li{
+    border-right: 1px solid;
+    margin-right: 2px;
+}
+
+
+
+
+
+

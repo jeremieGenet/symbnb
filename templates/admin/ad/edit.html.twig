@@ -1,0 +1,152 @@
+{# PAGE DE MODIFICATION DES ANNONCES EN MODE ADMINISTRATEUR #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modification de l'annonce n°{{ ad.id }}{% endblock %}
+
+{% form_theme form _self %} {# On appel le thème de formulaire (personnalisation) qui se trouve dans ce même fichier (_self) #}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-5">Modification de l'annonce {{ ad.title}}</h1>
+
+        {{ form_start(form) }}
+
+        <div class="row">
+            <div class="col">
+                <div class="card bg-secondary">
+                    <div class="card-header">
+                        <h4 class="card-title">Corriger l'annonce ?</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ form_widget(form) }}
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i>
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card bg-secondary">
+                    <div class="card-title">Les réservartions</div>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Voyageur</th>
+                                <th>Date de réservation</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {# Boucle dans le but de multiplier ce "<tr>" autant de fois qu'il y a de réservation dans l'annonce #}
+                            {% for booking in ad.bookings %} {# RAPPEL: ad.bookings représente un tableau de réservation de l'annonce #}
+                            <tr>
+                                <td>{{ booking.id }}</td>
+                                <td>{{ booking.booker.getFullName }}</td>
+                                <td>{{ booking.createdAt | date('d/m/Y H:i') }}</td> {# Date de la création avec l'heure et minute pour le "H:i" #}
+                                <td>
+                                    <a href="#" class="btn btn-primary">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card bg-secondary mt-5">
+                    <div class="card-title">Les Commentaires</div>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Voyageur</th>
+                                <th>Note</th>
+                                <th>Commentaire</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {# Boucle dans le but de multiplier ce "<tr>" autant de fois qu'il y a de commentaire pour l'annonce #}
+                            {% for comment in ad.comments %} {# RAPPEL: ad.comment représente un tableau de commentaires de l'annonce #}
+                            <tr>
+                                <td>{{ comment.id }}</td>
+                                <td>{{ comment.author.getFullName }}</td>
+                                <td>{{ comment.rating }}</td>
+                                <td>{{ comment.content }}</td>
+                                <td>
+                                    <a href="#" class="btn btn-primary">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+        
+    </div>
+{% endblock %}
+
+
+{% block _annonce_images_widget %}
+    {{ form_widget(form) }}
+{% endblock %}
+
+{% block _annonce_images_entry_row %}
+    <div id="block_{{id}}"> {# identifiant qui servira en javascript à supprimer cette div #}
+        {{ form_widget(form) }} {# Affichage des champs d'image et caption #}
+    </div>
+{% endblock %}
+
+{% block _annonce_images_entry_widget %}
+    <div class="row align-items-center mb-3">
+        <div class="col-4">
+            {{ form_row(form.url) }}
+            {% if value %}
+                <img src="{{ value.url }}" alt="" class="img-fluid">
+            {% endif %}
+        </div>
+        <div class="col-6">
+            {{ form_row(form.caption) }}
+        </div>
+        <div class="col">
+            {# BOUTON DE SUPPRESSION (AVEC LA POUBELLE) #}
+            <!-- On donne à notre bouton un data-action="delete" pour dire pour le cibler, et un data-target="id" pour dire qui on veut supprimer (ici la div id="block_id") -->
+            <button type="button" class="btn btn-danger" data-action="delete" data-target="#block_{{id}}">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script>
+        // GESTION DE LA SUPPRESSION DES IMAGES (collection , image + caption) QUAND ON APPUIE SUR LE BOUTON AVEC LA POUBELLE
+        $(document).ready(function(){ // Lorsque le documment est prêt, on fait cette fonction
+            // Tout les élément dont l'attribut est data-action="delete" (notre bouton), lorqu'on click dessus (évenement) alors...
+            $('[data-action="delete"]').on('click', function(){ 
+                const target = this.dataset.target; // On stock dans target l
+                // console.log(target); // Affiche dans la console lorsqu'on click sur le bouton de suppression : #block_annonce_image_0 ou 1 ou 3 selon le bouton cliqué
+                $(target).remove(); // On supprime donc la div avec l'id #block_annonce_image_0 ou 1 ...
+            });
+        });
+    </script>
+
+{% endblock %}

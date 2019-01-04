@@ -19,7 +19,9 @@ class ApplicationType extends AbstractType{ // On l'extends avec AbstractType po
      * @return array
      */
     protected function getConfig($label, $placeholder, $options = [] ) {
-        return array_merge([ // array_merge est une méthode php qui fusionne les tableaux (ici on veut fusionné le tableau avec le label et l'attr avec le tableau $option qui va contenir un tableau vide dans lequel on pourra inporter des options supplémentaires comme un widget...etc)
+        // array_merge_recursive est une méthode php qui fusionne les tableaux et le recursive permet de ne pas recouvir les informations
+        // (ici on veut fusionné le tableau avec le label et l'attr avec le tableau $option qui va contenir un tableau vide dans lequel on pourra inporter des options supplémentaires comme un widget...etc)
+        return array_merge_recursive([ 
             'label' => $label,
             'attr' => [
                 'placeholder' => $placeholder

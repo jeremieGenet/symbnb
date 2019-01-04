@@ -1,10 +1,10 @@
+
 /* JAVASCRIPT OU PLUTOT JQUERY QUI GERE NOS ANNONCES 
-*
-*
-*
+
+    SUPPRESSIION DES IMAGES DE LA COLLECTION D'IMAGE
 */
 
-// Je récupère le boutton id = add-image (celui Ajouter une image), et lorsqu'on click dessus alors...
+// Je récupère le boutton id = add-image (celui Ajouter une image), et lorsqu'on click dessus (évenement) alors...
 $('#add-image').click(function(){
     // Je récupère le numéro des futurs champs que je vais créer (On créer une constante de type number)
     const index = +$('#widgets-counter').val(); // On définit en fait le nb de 'div' de classe 'form-group' dans la div de id = annonce_images

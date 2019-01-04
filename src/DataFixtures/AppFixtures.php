@@ -5,15 +5,17 @@ namespace App\DataFixtures;
 
 use App\Entity\Role;
 use App\Entity\User;
+use App\Entity\Ad; 
+use App\Entity\Image; 
+use App\Entity\Booking;
+use App\Entity\Comment; 
 
 //use Cocur\Slugify\Slugify; // A ajouter pour se servir de la classe Slugify
-use App\Entity\Booking;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use App\Entity\Ad; // A ajouter pour se servir de la classe Ad
-use App\Entity\Image; // A ajouter pour se servir de la classe Image
-use Faker\Factory; // A ajouter pour se servir de la classe Factory de Faker
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface; // Utile dans le constructeur de notre classe AppFixtures()
+use Faker\Factory; 
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 
 class AppFixtures extends Fixture
 {
@@ -31,6 +33,7 @@ class AppFixtures extends Fixture
         $faker = Factory::create('fr_FR'); 
         //$slugify = new Slugify(); // Utilisation de la librairie Slugify (formate au format URL)
 
+
         // Création d'un Role administrateur
         $adminRole = new Role();
         $adminRole->setTitle('ROLE_ADMIN');
@@ -47,7 +50,6 @@ class AppFixtures extends Fixture
                   ->setDescription('<p>' . join('</p><p>', $faker->paragraphs(3)) . '</p>')
                   ->addUserRole($adminRole); // On donne à notre utilisateur le role créé au dessus (celui d'administrateur)
         $manager->persist($adminUser);
-                
 
         // GESTION DES FAKES UTILISATEURS
         $users = []; // Création d'un tableau qui contiendra après son passage dans la boucle les utilisateurs (soit des tableaux)
@@ -146,11 +148,23 @@ class AppFixtures extends Fixture
                         ->setAd($ad)
                         ->setStartDate($startDate)
                         ->setEndDate($endDate)
-                        ->setCreateAt($createdAt)
+                        ->setCreatedAt($createdAt)
                         ->setAmount($amount)
-                        ->setComment($comment);
+                        ->setComment($comment); // champ de commentaire du formulaire de réservation
 
                 $manager->persist($booking);
+
+                // GESTION DES COMMENTAIRES DES ANNONCES
+                // On tire à pile ou face (0 ou 1) pour savoir si une annonce aura un commentaire ou pas
+                if(mt_rand(0, 1)){
+                    $comment = new Comment();
+                    $comment->setContent($faker->paragraph())
+                            ->setRating(mt_rand(1, 5)) // On génère une note random de 1 a 5
+                            ->setAuthor($booker) // l'auteur du commentaire sera forcément celui qui est l'auteur de la réservation donc $booker défini plus haut
+                            ->setAd($ad); // On met l'annonce dont parle la réservation
+
+                    $manager->persist($comment);
+                }
 
             }
 

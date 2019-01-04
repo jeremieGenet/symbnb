@@ -1,0 +1,52 @@
+{# PAGE DE MODIFICATION DES RESERVATIONS EN MODE ADMINISTRATEUR #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modif réservation n°{{ booking.id }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="bg-primary my-4">Modification de la Réservation n°<strong>{{ booking.id }}</strong></h1>
+        {# DETAIL DE LA RESERVATION A MODIFIER #}
+        <div class="card alert-info my-3">
+            <div class="card-header">
+                <h5 class="card-title"><strong>Annonce liée : </strong>{{booking.ad.title}}</h5>
+            </div>
+            <div class="card-body">
+                
+                
+                <p>
+                    <strong>Auteur de la réservation : </strong> &nbsp; {{booking.booker.getFullName}} &nbsp;
+                    <img src="{{ booking.booker.picture }}" alt="{{booking.booker.getFullName}}" class="avatar avatar-mini mr-2">
+                </p>
+                <p><strong>Date de création de la réservation : &nbsp;</strong>{{ booking.createdAt | date('d/m/Y à H:i') }}</p>
+                <p><strong>Date de début de la réservation : &nbsp;</strong>{{ booking.startDate | date() }}</p>
+                <p><strong>Date de fin de la réservation : &nbsp;</strong>{{ booking.endDate | date() }}</p>
+            </div>
+        </div>
+
+        {{ form_start(form) }}
+
+                {# FORMULAIRE DE MODIFICATION DE RESERVATION #}
+                <div class="card bg-secondary">
+                    <div class="card-header">
+                        <h4 class="card-title">Corriger la réservation ?</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ form_widget(form) }}
+
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i>
+                            Enregistrer les modifications
+                        </button>
+
+                    </div>
+                </div>
+
+        {{ form_end(form) }}
+        
+    </div>
+{% endblock %}
+
+

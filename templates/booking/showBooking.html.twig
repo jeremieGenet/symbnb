@@ -6,7 +6,7 @@
 
 {% block body %}
     <div class="container">
-        <h1>Votre réservation n° {{ booking.id }} </h1>
+        <h1 class="my-4">Votre réservation n° {{ booking.id }} </h1>
 
         {# AFFICHAGE D'UN MESSAGE DE VALIDATION DE LA RESERVATION #}
         {# Si Il y a dans l'url la variable "booking_success" alors affichage message de validation en vert ici #}
@@ -29,10 +29,11 @@
 
         <div class="row">
 
-            <!-- DESCRIPTION DE LA RESERVATION -->
+            <!-- DESCRIPTION DE LA RESERVATION ET DE L'HOTE-->
             <div class="col">
-                <div class="alert alert-light">
-                    <h2>Détails</h2>
+                <div class="alert alert-secondary">
+                    <!-- DESCRIPTION DE LA RESERVATION -->
+                    <h2 class="my-4">Détails</h2>
                     <dl class="row">
                         <dt class="col-md-4">Numéro</dt>
                         <dd class="col-md-8">{{booking.id}}</dd>
@@ -43,9 +44,10 @@
                         <dt class="col-md-4">Nombre de nuits</dt>
                         <dd class="col-md-8">{{booking.duration}}</dd>
                         <dt class="col-md-4">Montant total</dt>
-                        <dd class="col-md-8">{{booking.amount}} &euro;</dd>
+                        <dd class="col-md-8">{{booking.amount | number_format(2, ',')}} &euro;</dd>
                         <dt class="col-md-4">Commentaire</dt>
-                        <dd class="col-md-8">{{booking.comment}}</dd>
+                        {# Filtre "default" (qui permet si il n'a pas de commentaire d'afficher un message #}
+                        <dd class="col-md-8">{{booking.comment | default('Aucun commentaire')}}</dd> 
                     </dl>
 
                     <hr>
@@ -70,26 +72,64 @@
                         </div>
                     </div>
                     {{booking.ad.author.description | raw}}
-
-                    <a href="{{path('user_show', {'slug': booking.ad.author.slug}) }}" class="btn btn-primary">{{booking.ad.author.firstName}}</a>
+                    <h4 class="my-4">
+                        <a href="{{path('user_show', {'slug': booking.ad.author.slug}) }}" class="btn btn-primary">Plus d'infos sur {{booking.ad.author.firstName}}</a>
+                    </h4>
+                    <!-- AFFICHAGE DU COMMENTAIRE OU DU FORMULAIRE D'AVIS SUR L'ANNONCE (qui ne peut être affiché qu'après que le séjour soit fini) -->
+                    <div class="alert alert-light mt-5" id="comment">
+                        <h2 class="alert-heading">Votre avis compte !</h2>
+                        {# Condition pour que le formulaire ne s'affiche qu'après la fin du séjour #}
+                        {# Si la date d'aujourd'hui (date()) est supérieur à la date de fin de la réservation (date(booking.endDate) alors ...#}
+                        {% if date() > date(booking.endDATE) %}
+                            {# On récupère le commentaire et on le stock dans la variable comment (déclaré par twig avec le mot "set")...
+                            ...puis en utilisant la fonction 'maison' qui se trouve dans 'Ad.php' (getCommentFromAuthor()),... 
+                            ..."app.user" est une variable global de twig et représent l'utilisateur connecté #}
+                            {%  set comment = booking.ad.getCommentFromAuthor(app.user) %}
+                            {# AFFICHAGE DU OU DES COMMENTAIRE DEJA REDIGES PAR L'UTILISATEUR #}
+                            {# Si il y a un commentaire (getCommentFromAuthor() renvoie un commentaire, et null si il n'y en a pas) #}
+                            {% if comment is not null %}
+                                <blockquote>
+                                    {{comment.content}}
+                                </blockquote>
+                                <strong>Note :</strong> 
+                                <!-- SYSTEME DE NOTATION "ETOILES" DES ANNONCES (RATING) DANS LES COMMENTAIRES (comment.rating) -->
+                            {# On inclu le fichier qui est dans les partial, en spécifiant (avec "with") que ce fichier possède une variable rating qui vaut comment.rating #}
+                            {% include 'partials/rating.html.twig' with {'rating': comment.rating} %}
+                            {# AFFICHAGE DU FORMULAIRE DE REDATION D'UN COMMENTAIRE (note + commentaire) #}
+                            {% else %}
+                                {{ form_start(form) }}
+                                {{ form_widget(form) }}
+                                <button type="submit" class="btn btn-success">Confirmer !</button>
+                                {{ form_end(form) }}
+                            {% endif %}
+                        {% else %}
+                            <p>Vous ne pourrez noter que lors de la fin de votre séjour !</p>
+                        {% endif %}
+                    </div>
                 </div>
+
+
             </div>
 
             <!-- DESCRIPTION DE L'ANNONCE RESERVEE -->
             <div class="col">
-                <div class="alert alert-light">
-                    <h2 class="alert-heading">Votre hébergement</h2>
+                <div class="alert alert-secondary">
+                    <h2 class="alert-heading my-4">Votre hébergement</h2>
 
-                    <h4>
+                    <h4 class="my-4">
                         <a href="{{ path('ad_show', {'slug': booking.ad.slug}) }}">{{booking.ad.title}}</a>
                     </h4>
                     <!-- Class="img-fluid" permet à bootstrap de signifier à l'image de s'inclure dans la colonne (et non dans la page en entier) -->
                     <img src="{{booking.ad.coverImage}}" alt="Image de {{booking.ad.title}}" class="img-fluid">
+                    
+                    <p class="my-4">
+                        {{booking.ad.content | raw}}
+                    </p>
 
-                    {{booking.ad.content | raw}}
-
-                    <!-- Lien qui méne à l'annonce réservée -->
-                    <a href="{{ path('ad_show', {'slug': booking.ad.slug}) }}" class="btn btn-primary">Plus d'informations</a>
+                    <!-- Lien Bouton qui méne à l'annonce réservée -->
+                    <h4 class="my-4">
+                        <a href="{{ path('ad_show', {'slug': booking.ad.slug}) }}" class="btn btn-primary">Plus d'informations</a>
+                    </h4>
                 </div>
             </div>
         </div>

@@ -11,13 +11,13 @@
 
 {% block body %}
     <div class="container">
-        <h1>Réserver pour l'annonce : {{ ad.title }} </h1>
+        <h1>Réserver pour l'annonce : <em>{{ ad.title }}</em> </h1>
         {# Rappel: getFullName est une méthode de l'entité User.php qui return le nom et prénom et ici de l'auteur de l'annonce #}
         <p>Vous êtes sur le point de réservez le bien se <strong>{{ ad.author.getFullName }}</strong></p>
         
         {{ form_start(form) }}
-        <div class="alert alert-light">
-            <h2>Commencez par nous dire quelles sont les dates qui vous interessent !</h2>
+        <div class="alert alert-secondary">
+            <h4 class="my-3">Commencez par nous dire quelles sont les dates qui vous interessent !</h4>
             <div class="row">
                 <div class="col">
                     {{form_row(form.startDate)}} {# Affichage du champs startDate #}
@@ -27,8 +27,9 @@
                 </div>
             </div>
             <!-- Montant et nombre de jour du séjour (ces 2 span sont dynamiquement modifiés via javascript et la fonction calculateAmount() plus bas -->
-            <h4>Montant du séjour : <span id="amount">...</span> &euro;</h4>
-            <span id="days">0</span> nuit(s) à {{ad.price}} / nuit
+            <h4 class="mt-3">Montant du séjour : <span id="amount">...</span> &euro;</h4>
+            <!-- Filtre twig number_format() permt de formater un nombre selon le format désiré (parm1= nb de chiffre après la virgule, param2= si on veut que la séparation soit avec une virgule, un point au autre -->
+            <span id="days">0</span> nuit(s) à {{ ad.price | number_format(2, ',') }} &euro; par nuit
 
             <h4 class="mt-3"m>Vous avez un commentaire ?</h4>
             {# Affichage de la zone de commentaire #}
