@@ -1,0 +1,29 @@
+{# BARE DE PAGINATION DU MODE ADMINISTRATION #}
+
+{# le chemin des liens est une variable "route", initialisée dans chaque fichier qui utilise la pagination #}
+
+<div class="d-flex justify-content-center">
+    {# On définit des variables avec le mot 'set' #}
+    {% set page = pagination.getCurrentPage %} {# On se sert des getteurs de la classe PaginationService pour définir la page actuelle #}
+    {% set nbPages = pagination.getPages %} {# On se sert de la fonction getPages() de la classe PaginationService pour définir le nombre de pages #}
+    <ul class="pagination">
+    <!-- Lien "précédent" de la pagination -->
+        <li class="page-item {% if page == 1 %}disabled{% endif %}"> {# Si la page est égal à 1 alors le lien est "disabled" (désactivé) #}
+            <!-- Chemin calculé "page -1" soit la page actuelle - 1 -->
+            <a class="page-link" href="{{ path(route, {'page': page - 1}) }}">&laquo;</a>
+        </li>
+        {# (Boucle de 1 au nombre de pages) #}
+        {% for i in 1..nbPages %} {# Pour i = 1 jusqu'à i = nbPages (on incrémente i jusqu'au nombre de page) #}
+    <!-- Liens "Numérotés" de la pagination -->
+        <li class="page-item {% if page == i %}active{% endif %}"> {# Condition si la page sur laquelle on est actuellement est la même que "i" alors la classe sera active (permet la bonne sélection du numéro de la pagination)#}
+            <!-- Lien de Pagination vers la page administration des annonces (en param le n° de la page qui correspond à "i" incrémenté par la boucle for) -->
+            <a class="page-link" href="{{ path(route, {'page': i}) }}">{{ i }}</a>
+        </li>
+        {% endfor %}
+    <!-- Lien "suivant" de la pagination -->
+        <li class="page-item {% if page == nbPages %}disabled{% endif %}"> {# Si la page est égal au nombre de page total (nbPage) alors le lien est "disabled" (désactivé) #}
+        <!-- Chemin calculé "page -1" soit la page actuelle + 1 -->
+            <a class="page-link" href="{{ path(route, {'page': page + 1}) }}">&raquo;</a>
+        </li>
+    </ul>
+</div>

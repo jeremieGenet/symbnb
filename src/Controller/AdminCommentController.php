@@ -4,24 +4,37 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Form\CommentType;
+use App\Form\AdminCommentType;
+use App\Service\PaginationService;
 use App\Repository\CommentRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Form\AdminCommentType;
 
 class AdminCommentController extends AbstractController
 {
     /**
      * Affiche la page d'administration de tout les commentaires
+     * le "requirements={"page": "\d+"}" permet de contraindre le paramètre "{page}" dans le routing en lui donnant une Regex qui dis ici que "page" doit être un nombre ou des nombres.
+     * On initialise à 1 la variable $page (utilisée dans le routing) qui va nous servir lors de la pagination des annonces. "page" est par défaut = 1 soit notre page de départ
      * 
-     * @Route("/admin/comments", name="admin_comments_index")
+     * @Route("/admin/comments/{page}", name="admin_comments_index", requirements={"page": "\d+"})
      */
-    public function index(CommentRepository $repo) // On oublie pas "d'injecter" le repository du commentaire (pour pouvoir communique avec la bdd)
+    public function index(CommentRepository $repo, $page = 1, PaginationService $pagination) // On oublie pas "d'injecter" le repository du commentaire (pour pouvoir communique avec la bdd)
     {
+        // CONFIGURATION DE LA PAGINATION (utilisation de la classe PaginationService)
+        $pagination->setEntityClass(Comment::class) // $pagination reçoit la classe Ad.php
+                   ->setCurrentPage($page) // $pagination reçoit la page actuelle (dans le routing, et initialisé dans les param de la fonction index)
+                   ->setLimit(10); // On définit la limite du nb d'annonce à afficher par page
+
+        /*
+        dump($pagination->getData()); // Affiche les commentaires (dans la limitation données par la méthode getData(), soit ici une limite de 10)
+        die();
+        */
+
         return $this->render('admin/comments/admin_comments.html.twig', [
-            'comments' => $repo->findAll() // On va chercher nos commentaires (dans la bdd) grace au repository auquel on applique la méthode findAll() de symfony
+            'pagination' => $pagination 
         ]);
     }
 

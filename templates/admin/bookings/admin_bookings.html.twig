@@ -24,8 +24,9 @@
             </thead>
             <tbody>
             
-                {# Boucle dans le but de multiplier ce "<tr>" autant de fois qu'il y a de réservation #}
-                {% for booking in bookings %} {# RAPPEL: comments représente un tableau de réservations #}
+                {#  #}
+                {# Boucle for dans le but de multiplier ce "<tr>" autant de fois qu'il y a de réservations #}
+                {% for booking in pagination.data %} {# RAPPEL: pagination.data vient l'entité Booking.php (voir config de pagination dans AdminBookingController) #}
                 <tr>
                     <td>{{ booking.id }}</td>
                     <td>{{ booking.createdAt | date('d/m/y H:i') }}</td> <!-- LA DATE ET L'HEURE -->
@@ -52,5 +53,10 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- BARE DE PAGINATION BOOSTSWATCH (thème HERO) -->
+        {# On initialise la variable "route" qui se trouve dans les liens du fichier de pagination en lui donnant le chemin voulu #}
+        {% include 'admin/partials/pagination.html.twig' with {'route' : 'admin_bookings_index'} %}
+
     </div>
 {% endblock %}

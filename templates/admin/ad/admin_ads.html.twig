@@ -20,11 +20,11 @@
                     <th><strong>Supprimer</strong></th>
                 </tr>
             </thead>
-
-            <tbody>
-            {# On veut une ligne par annonce #}
-            {% for ad in ads %}
             
+            <tbody>
+            {% dump(pagination.data) %}
+            {# On veut une ligne par annonce #}
+            {% for ad in pagination.data %} {# RAPPEL: pagination.data vient l'entité Ad.php (voir config de pagination dans AdminAdController) #}
                 <tr class="table-default">
                     <td>{{ad.id}}</td>
                     <td>{{ad.title}}</td>
@@ -51,5 +51,10 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <!-- BARE DE PAGINATION BOOSTSWATCH (thème HERO) -->
+        {# On initialise la variable "route" qui se trouve dans les liens du fichier de pagination en lui donnant le chemin voulu #}
+        {% include 'admin/partials/pagination.html.twig' with {'route' : 'admin_ads_index'} %}
+
     </div>
 {% endblock %}

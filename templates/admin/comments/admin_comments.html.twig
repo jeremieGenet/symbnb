@@ -24,7 +24,7 @@
             <tbody>
             
                 {# Boucle dans le but de multiplier ce "<tr>" autant de fois qu'il y a de commentaire #}
-                {% for comment in comments %} {# RAPPEL: comments représente un tableau de commentaires #}
+                {% for comment in pagination.data %} {# RAPPEL: pagination.data vient l'entité Comment.php (voir config de pagination dans AdminCommentController) #}
                 <tr>
                     <td>{{ comment.id }}</td>
                     <td>{{ comment.createdAt | date('d/m/y H:i') }}</td> <!-- LA DATE ET L'HEURE -->
@@ -50,5 +50,10 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- BARE DE PAGINATION BOOSTSWATCH (thème HERO) -->
+        {# On initialise la variable "route" qui se trouve dans les liens du fichier de pagination en lui donnant le chemin voulu #}
+        {% include 'admin/partials/pagination.html.twig' with {'route' : 'admin_comments_index'} %}
+
     </div>
 {% endblock %}
