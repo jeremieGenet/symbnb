@@ -17,105 +17,48 @@
                 <a class="btn btn-primary btn-lg" href="{{ path('ads_show') }}" role="button">Voir nos annonces</a>
             </p>
         </div>
-
+        
+        <!-- APPARTEMENTS STARS (on peut même en définir le nombre présentés dans le HomeController.php) -->
+        {#
+        {{dump(bestAds)}} <!-- Permet de voir le contenu de la variable -->
+        #}
         <h2 class="h1 my-4">Nos appartements stars</h2>
-
         <div class="row">
-            <div class="col-md-4">
-                <div class="card bg-light mb-3">
-                    <div class="card-header text-center">
-                        3 chambres, <strong>49&euros; / nuit</strong> <br>
-                        <small>Pas encore noté</small>
-                    </div>
-
-                    <img src="http:///placehold.it/1000x400" alt="Image de l'appartement" style="height: 200px; width: 100%; display: block">
-
-                    <div class="card-body">
-                        <h4 class="card-title">
-                            Appartement de Ouf !
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. In vero nisi fugit natus cumque velit quas sapiente necessitatibus, beatae voluptatem.
-                        </p>
-                        <a href="" class="btn btn-secondary">En savoir plus +!</a>
-                    </div>
-                </div> 
-            </div>
-            <div class="col-md-4">
-                <div class="card bg-light mb-3">
-                    <div class="card-header text-center">
-                        3 chambres, <strong>49&euros; / nuit</strong> <br>
-                        <small>Pas encore noté</small>
-                    </div>
-
-                    <img src="http:///placehold.it/1000x400" alt="Image de l'appartement" style="height: 200px; width: 100%; display: block">
-
-                    <div class="card-body">
-                        <h4 class="card-title">
-                            Appartement de Ouf !
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. In vero nisi fugit natus cumque velit quas sapiente necessitatibus, beatae voluptatem.
-                        </p>
-                        <a href="" class="btn btn-secondary">En savoir plus +!</a>
-                    </div>
-                </div> 
-            </div>
-            <div class="col-md-4">
-                <div class="card bg-light mb-3">
-                    <div class="card-header text-center">
-                        3 chambres, <strong>49&euros; / nuit</strong> <br>
-                        <small>Pas encore noté</small>
-                    </div>
-
-                    <img src="http:///placehold.it/1000x400" alt="Image de l'appartement" style="height: 200px; width: 100%; display: block">
-
-                    <div class="card-body">
-                        <h4 class="card-title">
-                            Appartement de Ouf !
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. In vero nisi fugit natus cumque velit quas sapiente necessitatibus, beatae voluptatem.
-                        </p>
-                        <a href="" class="btn btn-secondary">En savoir plus +!</a>
-                    </div>
-                </div> 
-            </div>
+            {# Boucle qui affiche les annonces les mieux notées de notre site #}
+            {% for data in bestAds%}
+                {# On inclu l'affichage d'ensemble d'annonce, en spécifiant que la variable "ad" vaudra data.annonce (data.annonce est le contenu de l'annonce #}
+                {#  "data est la variable crée dans la boucle for ci-dessus et représente "bestAds" #}
+                {# donc "data.annonce" représente ici la clé du tableau annonce, faire un dump(bestAds) pour bien comprendre, et verifier la clé "annonce" qui est des "data" des "bestAds" #}
+                {% include 'ad/_ads.html.twig' with {'ad': data.annonce} %}
+            {% endfor %}
         </div>
 
+        <!-- PROPRIETAIRES STARS d'au moins 3 commentaires (on peut même en définir le nombre de propriétaires stars présentés dans le HomeController.php) -->
         <h2 class="h1 my-4">Nos propriétaires stars !</h2>
-
+        {#
+        {{dump(bestUsers)}} <!-- Permet de voir le contenu de la variable -->
+        #}
         <div class="row">
+            {# Boucle qui affiche les utilisateurs qui possèdent les annonces les mieux notées de notre site #}
+            {% for data in bestUsers%}
             <div class="col">
                 <div class="card border-secondary mb-3">
                     <div class="card-body">
-                        <h4 class="card-title">Jérémie Genet</h4>
+                        <h4 class="card-title">{{data.user.firstName}} {{data.user.firstName}}</h4>
 
                         <hr>
 
                         <div class="card-text">
-                            <img src="http://placehold.it/64x64" alt="Avatar de Jérémie Genet" class=" float-left mr-3">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum corrupti minus repellendus ab delectus ipsam.</p>
-                            <a href="#" class="btn btn-success float-right">En savoir plus !</a>
+                            <img src="{{data.user.picture}}" alt="Avatar de {{data.user.firstName}} {{data.user.firstName}}" class=" avatar float-left mr-3">
+                            <p>{{data.user.introduction}}</p>
+                            <!--  Lien vers la description de l'utilisateur (utilisateur du slug de l'utilisateur en paramètre de la fonction "path" -->
+                            <a href="{{ path('user_show', {'slug': data.user.slug}) }}" class="btn btn-success float-right">En savoir plus !</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="card border-secondary mb-3">
-                    <div class="card-body">
-                        <h4 class="card-title">Jérémie Genet</h4>
-
-                        <hr>
-
-                        <div class="card-text">
-                            <img src="http://placehold.it/64x64" alt="Avatar de Jérémie Genet" class=" float-left mr-3">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum corrupti minus repellendus ab delectus ipsam.</p>
-                            <a href="#" class="btn btn-success float-right">En savoir plus !</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
+            
         </div>
 
     </div>

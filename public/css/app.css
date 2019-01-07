@@ -1,4 +1,4 @@
-div.container{
+div.container, div.container-fluid{
     margin-top: 20px;
 }
 
@@ -27,6 +27,7 @@ div.carousel-caption{
 .avatar{
     max-width: 64px;
     max-height: 64px;
+    border-radius: 32px;
 }
 
 /* Style de la photo d'avatar de l'utilisateur lorsqu'il est connecté (dans la nav bar)*/
